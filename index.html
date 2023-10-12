@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    
+</head>
+<body>
+
+    <!-- Expense Tracker Form -->
+    <form id="ExpenseForm" class="form-group">
+        <label for="amount">Expense Amount: </label>
+        <input type="number" name="amount" id="amt" min="1">
+        <label for="description">Choose Description: </label>
+        <input type="text" name="description" id="descr">
+        <label for="category">Choose Category: </label>
+        <select name="category" id="cat">
+            <option class="catOption">Fuel</option>
+            <option class="catOption">Food</option>
+            <option class="catOption">Movie</option>
+            <option class="catOption">Electricity</option>
+            <option class="catOption">Others</option>
+        </select>
+        <input type="submit" id="submit" value="Add Expense">
+    </form>
+    <br>
+
+    <!-- Add expenses here -->
+    <ul id="expenses"></ul>
+
+    <!-- JS for the backend logic -->
+    <script src="backend.js"></script>
+
+</body>
+
+</html>
+
+
+
+<!-- <body class="container">
+    <div id="formOuter" class="container">
+        <form class="form-group" onsubmit="return printAll()" >
+            <h1>Book a call</h1>
+            <h5>Book a call slot and our representative will call you within 1hr of selected time.</h5>
+
+            <hr>
+
+            <Label for="name" class="form-label">Name:</Label><br>
+            <input type="text" id="name" name="name" class="form-control"><br>
+            <Label for="email" class="form-label">Email:</Label><br>
+            <input type="text" id="email" name="email" class="form-control"><br>
+            <Label for="phone" class="form-label">Phone:</Label><br>
+            <input type="text" id="phone" name="phone" pattern="[0-9]{10}" class="form-control"><br>
+            <Label for="date" class="form-label">Time for Call:</Label><br>
+            <div class="input-group">
+                <input type="date" class="dateTime" id = "date" name="date" class="form-date">
+                <input type="time" class="dateTime" id="time" name="time" class="form-control"><br><br>
+            </div>
+
+
+            <input type="submit" name="submit" id="submitButton" value="GET A CALL">
+        </form>
+    </div> -->
+
+    <!-- <ul class="items">
+      <li class="item">item1</li>
+      <li class="item">item2</li>
+      <li class="item">item3</li>
+    </ul> -->
+<!-- 
+    <h1 id="msg"></h1> -->
+
+    <!-- <script src="main.js" rel="javascript"></script> -->
+<!--     
+    
+</body> -->
