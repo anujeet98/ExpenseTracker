@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    database: 'bookingapp',
+    database: 'expense_tracker',
     password: 'rootoor'
 });
 

@@ -13,20 +13,37 @@ submitBtn.addEventListener('click', postSignup);
 
 
 
-function postSignup(event){
+async function postSignup(event){
     event.preventDefault();
+    try
+    {
+        if(username.value=='' || email.value==''|| password.value==''){
+            return alert('please fill all the fields');
+        }
 
-    if(username.value=='' || email.value==''|| password.value==''){
-        return alert('please fill all the fields');
+        const signupObj = {
+            username: username.value,
+            email: email.value,
+            password: password.value
+        };
+
+        const response = await axios.post('http://localhost:9000/user/signup', signupObj);
+        if(response.status===201){
+            alert('user created successfully');
+            clearUserForm();
+        }
+    }catch(err){
+        if(err.response.status===400){
+            return alert(err.response.data.error);
+        }
+        document.body.innerHTML += `<div style="color:red">${err}</div>`
     }
+}
 
-    const signupObj = {
-        username: username.value,
-        email: email.value,
-        password: password.value
-    };
 
-    axios.post('http://localhost:8000/user/signup', signupObj)
-        .then()
-        .catch(err=>console.log(err));
+
+function clearUserForm(){
+    username.value='';
+    email.value='';
+    password.value='';
 }

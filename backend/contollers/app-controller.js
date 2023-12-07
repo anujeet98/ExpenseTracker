@@ -1,5 +1,5 @@
-const Expense = require('../Model/expenseModel.js');
-const db = require('../util/db.js');
+const Expense = require('../models/expense-model.js');
+const db = require('../Util/db.js');
 
 exports.getExpenses = (req,res,next) => {
     // console.log('get Expenses hit');
