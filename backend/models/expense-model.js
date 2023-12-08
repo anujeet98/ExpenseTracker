@@ -1,4 +1,4 @@
-const db = require('../Util/db.js');
+const db = require('../util/db.js');
 
 module.exports = class expense{
     constructor(amount, description, category){

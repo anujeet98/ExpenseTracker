@@ -31,7 +31,7 @@ async function postSignup(event){
         if(response.status===201){
             alert('user created successfully');
             clearUserForm();
-            
+            window.location.href = "expense.html";
         }
     }catch(err){
         if(err.response.status===400){

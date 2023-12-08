@@ -29,6 +29,7 @@ async function getLogin(event){
         if(response.status===201){
             alert(response.data.message);
             clearUserForm();
+            window.location.href = "expense.html";
         }
     }catch(err){
         if(err.response.status >= 401 && err.response.status<500){

@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');   
 const bodyParser = require('body-parser');
 
-const appRoutes = require('./routes/app-route');
+const expenseRoutes = require('./routes/expense-route');
 const userRoutes = require('./routes/user-route');
 //---------------------------------------------------------------
 
@@ -15,7 +15,7 @@ app.use(bodyParser.json({extended: false}));
 
 //--------------------------------------------------------------
 
-app.use('/expenseApp', appRoutes);
+app.use('/expense', expenseRoutes);
 
 app.use('/user', userRoutes);
 

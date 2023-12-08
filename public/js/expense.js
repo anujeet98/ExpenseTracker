@@ -28,7 +28,7 @@ function addExpense(e) {
             category : category.value
         };
         if(editing===true){
-            axios.put('http://localhost:9000/expenseApp/update-expense/'+editId, expenseObj)
+            axios.put('http://localhost:9000/expense/update-expense/'+editId, expenseObj)
             .then(result => {
                 //add Expense to list
                 amount.value = '';
@@ -40,7 +40,7 @@ function addExpense(e) {
             .catch(err => alert('Something went wrong while editing expense: '+err));
         }
         else{
-            axios.post('http://localhost:9000/expenseApp/add-expense', expenseObj)
+            axios.post('http://localhost:9000/expense/add-expense', expenseObj)
                 .then(result => {
                     //add Expense to list
                     amount.value = '';
@@ -55,7 +55,7 @@ function addExpense(e) {
 
 function getExpenses(){
     editing=false;
-    axios.get('http://localhost:9000/expenseApp/get-expenses')
+    axios.get('http://localhost:9000/expense/get-expenses')
     .then(response => {
         // expenses.innerHTML = '';
         showExpenses(response);
@@ -127,7 +127,7 @@ function showExpenses(res){
 
 function deleteExpense(e,id){   
     let itemSelect = e.target.parentElement;
-    axios.delete("http://localhost:9000/expenseApp/delete-expense/"+id)
+    axios.delete("http://localhost:9000/expense/delete-expense/"+id)
     .then(()=>{
         expenses.removeChild(itemSelect);
         alert('Expense deleted..!!');
@@ -137,7 +137,7 @@ function deleteExpense(e,id){
 
 function editExpense(e,id){
     let itemSelect = e.target.parentElement;
-    axios.get("http://localhost:9000/expenseApp/get-expense/"+id)
+    axios.get("http://localhost:9000/expense/get-expense/"+id)
     .then(res => {
         let obj = res.data;
         amount.value = obj.amount;
