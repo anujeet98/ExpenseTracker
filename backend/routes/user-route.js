@@ -7,6 +7,8 @@ const signupController = require('../contollers/signup-controller');
 
 router.post('/signup',signupController.postSignup);
 
+router.post('/login', signupController.postLogin);
+
 
 
 module.exports = router;

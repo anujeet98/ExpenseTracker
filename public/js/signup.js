@@ -1,3 +1,4 @@
+const username = document.getElementById("username");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const submitBtn = document.getElementById("submit");
@@ -5,33 +6,34 @@ const submitBtn = document.getElementById("submit");
 //=====================================================================================================
 
 
-submitBtn.addEventListener('click', getLogin);
+submitBtn.addEventListener('click', postSignup);
 
 
 //===================================================================================================
 
 
 
-async function getLogin(event){
+async function postSignup(event){
     event.preventDefault();
     try
     {
-        if(email.value==''|| password.value==''){
+        if(username.value=='' || email.value==''|| password.value==''){
             return alert('please fill all the fields');
         }
 
-        const getLogin = {
+        const signupObj = {
+            username: username.value,
             email: email.value,
             password: password.value
         };
 
-        const response = await axios.post('http://localhost:9000/user/login', getLogin);
+        const response = await axios.post('http://localhost:9000/user/signup', signupObj);
         if(response.status===201){
-            alert(response.data.message);
+            alert('user created successfully');
             clearUserForm();
         }
     }catch(err){
-        if(err.response.status >= 401 && err.response.status<500){
+        if(err.response.status===400){
             return alert(err.response.data.error);
         }
         document.body.innerHTML += `<div style="color:red">${err}</div>`
@@ -41,6 +43,7 @@ async function getLogin(event){
 
 
 function clearUserForm(){
+    username.value='';
     email.value='';
     password.value='';
 }
