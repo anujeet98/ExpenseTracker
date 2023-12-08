@@ -34,7 +34,7 @@ async function getLogin(event){
         if(err.response.status >= 401 && err.response.status<500){
             return alert(err.response.data.error);
         }
-        document.body.innerHTML += `<div style="color:red">${err}</div>`
+        document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`
     }
 }
 

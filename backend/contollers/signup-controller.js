@@ -40,15 +40,15 @@ module.exports.postLogin = async(req,res,next) => {
         if(userExists[0].length!==0){
             //user email exists => verify password
             if(userExists[0][0].password === password){
-                return res.status(201).json({message: "user logged in", status: "success"});
+                return res.status(201).json({message: "User login successfull", status: "success"});
             }
             else{
-                return res.status(401).json({error: "incorrect user password"});
+                return res.status(401).json({error: "Incorrect user password.\nUser not authorized."});
             }
         }
         else{
             //user email doesn't exist
-            return res.status(404).json({error: "user doesn't exists"});
+            return res.status(404).json({error: "User not found"});
         }
     }
     catch(err){
