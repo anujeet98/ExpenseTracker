@@ -31,12 +31,13 @@ async function postSignup(event){
         if(response.status===201){
             alert('user created successfully');
             clearUserForm();
+            
         }
     }catch(err){
         if(err.response.status===400){
             return alert(err.response.data.error);
         }
-        document.body.innerHTML += `<div style="color:red">${err}</div>`
+        document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`
     }
 }
 

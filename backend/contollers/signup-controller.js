@@ -1,4 +1,5 @@
 const User = require('../models/user-model');
+const bcrypt = require('bcrypt');
 
 
 function validateInput(input){
@@ -19,9 +20,10 @@ module.exports.postSignup = async(req,res,next) => {
             return res.status(400).json({error: "Email already exists"});
         }
 
-        //else, user doesn't exists -> create new record
+        //else, user doesn't exists -> Encrypt password -> create new record
     
-        const newUser = new User(username, email, password);
+        const hash = await bcrypt.hash(password, 10);
+        const newUser = new User(username, email, hash);
 
         const savedUser = await newUser.save();
         return res.status(201).json(savedUser[0]);
@@ -39,7 +41,8 @@ module.exports.postLogin = async(req,res,next) => {
         const userExists = await User.findUserByEmail(email);
         if(userExists[0].length!==0){
             //user email exists => verify password
-            if(userExists[0][0].password === password){
+            const passwordMatch = await bcrypt.compare(password, userExists[0][0].password);
+            if(passwordMatch){
                 return res.status(201).json({message: "User login successfull", status: "success"});
             }
             else{
