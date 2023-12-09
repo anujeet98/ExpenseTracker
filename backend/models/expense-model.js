@@ -20,8 +20,8 @@ module.exports = class expense{
         return db.execute('SELECT id, amount, description, category FROM expense WHERE userId=?',[userId]);
     }
 
-    static deleteexpense(id){
-        return db.execute('DELETE FROM expense WHERE id=?',[id]);
+    static deleteExpense(expenseId, userId){
+        return db.execute('DELETE FROM expense WHERE id=? and userId=?',[expenseId, userId]);
     }
 
     static fetchById(id){

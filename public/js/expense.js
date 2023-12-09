@@ -28,21 +28,24 @@ async function addExpense(e) {
                 category : category.value,
             };
             if(editing===true){
-                const result = await axios.put('http://localhost:9000/expense/update-expense/'+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
+                //Edit Product
+                const response = await axios.put('http://localhost:9000/expense/update-expense/'+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
                 
                 amount.value = '';
                 description.value = '';
                 category.value = '';
                 editing=false;
-                updateNewExpense_Li(result.data.updatedExpenseDetail);
+                updateNewExpense_Li(response.data.updatedExpenseDetail);
             }
             else{
-                const result = await axios.post('http://localhost:9000/expense/add-expense', expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
-
-                amount.value = '';
-                description.value = '';
-                category.value = '';
-                updateNewExpense_Li(result.data.newExpenseDetail);
+                //Add New Product
+                const response = await axios.post('http://localhost:9000/expense/add-expense', expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
+                if(response.status===201){
+                    amount.value = '';
+                    description.value = '';
+                    category.value = '';
+                    updateNewExpense_Li(response.data.newExpenseDetail);
+                }
             }
         }
     }
@@ -57,21 +60,26 @@ async function getExpenses(){
         editing=false;
         const token = localStorage.getItem("token");
         const response = await axios.get('http://localhost:9000/expense/get-expenses', {headers: {"Authorization":token}});
-        showExpenses(response);
+        if(response.status === 200)
+            showExpenses(response);
     }
     catch(err){
         alert(err.response.data.error);
     }
 }
 
-function deleteExpense(e,id){   
-    let itemSelect = e.target.parentElement;
-    axios.delete("http://localhost:9000/expense/delete-expense/"+id)
-    .then(()=>{
-        expenses.removeChild(itemSelect);
-        alert('Expense deleted..!!');
-    })
-    .catch(err => alert('Something went wrong while deleting expense: '+err));
+async function deleteExpense(e,id){   
+    try{
+        let itemSelect = e.target.parentElement;
+        const response = await axios.delete("http://localhost:9000/expense/delete-expense/"+id, {headers: {"Authorization": localStorage.getItem("token")}});
+        if(response.status === 204){
+            expenses.removeChild(itemSelect);
+            alert('Expense deleted..!!');
+        }
+    }
+    catch(err){
+        alert(err.response.data.error);
+    }
 }
 
 function editExpense(e,id){
