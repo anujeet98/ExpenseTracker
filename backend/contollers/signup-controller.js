@@ -1,6 +1,6 @@
 const User = require('../models/user-model');
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
 
 function validateInput(input){
     if(input.length === 0)
@@ -43,7 +43,7 @@ module.exports.postLogin = async(req,res,next) => {
             //user email exists => verify password
             const passwordMatch = await bcrypt.compare(password, userExists[0][0].password);
             if(passwordMatch){
-                return res.status(201).json({message: "User login successfull", status: "success"});
+                return res.status(201).json({message: "User login successful", status: "success", token: jwt.sign({userId:userExists[0][0].id}, "secretkey") });
             }
             else{
                 return res.status(401).json({error: "Incorrect user password.\nUser not authorized."});

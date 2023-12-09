@@ -1,36 +1,47 @@
 const Expense = require('../models/expense-model.js');
 const db = require('../util/db.js');
+const jwt = require('jsonwebtoken');
 
-exports.getExpenses = (req,res,next) => {
-    // console.log('get Expenses hit');
-    Expense.fetchAll()
-        .then(result => {
-            res.json(result[0]);
-        })
-        .catch(err => {
-            console.error('ReadError-getExpenses',err);
-            // res.status(400).json([]);
-        });
+exports.getExpenses = async(req,res,next) => {
+    try{
+        // console.log('get Expenses hit');
+        const token = req.headers.authorization;
+        const verifiedJWT = jwt.verify(token, "secretkey");
+        const result = await Expense.fetchAll(verifiedJWT.userId);  
+        return res.json(result[0]);
+    }
+    catch(err){
+        if(err.name === 'JsonWebTokenError'){
+            console.error('JsonWebTokenError-postExpense: ',err);
+            return res.status(401).json({ error: 'Unauthorized - Invalid token' });
+        }
+        console.error('ReadError-getExpenses',err);
+        return res.status(500).json({error: "Internal Server Error while fetching expenses"});
+    }
 };
 
-exports.postExpense = (req,res,next) => {
-    // console.log('post Expense hit');
-    const expense = new Expense(req.body.amount,req.body.description,req.body.category);
-    expense.save()
-        .then(result => {
-            let resJSON = {
-                "newExpenseDetail" : {
-                    "id" : result[0].insertId, ...req.body
-                }
+exports.postExpense = async(req,res,next) => {
+    try{
+        // console.log('post Expense hit');
+        const token = req.headers.authorization;
+        const verifiedJWT = jwt.verify(token, "secretkey");
+        const expense = new Expense(req.body.amount, req.body.description, req.body.category, verifiedJWT.userId);
+        const result = await expense.save();
+        const resJSON = {
+            "newExpenseDetail" : {
+                "id" : result[0].insertId, ...req.body
             }
-            
-            // console.log(resJSON);
-            res.json(resJSON);
-        })
-        .catch(err => {
-            console.error('WriteError-postExpense',err);
-            // res.status(400).json([]);
-        });
+        }
+        return res.json(resJSON);
+    }
+    catch(err){
+        if(err.name === 'JsonWebTokenError'){
+            console.error('JsonWebTokenError-postExpense: ',err);
+            return res.status(401).json({ error: 'Unauthorized - Invalid token' });
+        }
+        console.error('WriteError-postExpense: ',err);
+        return res.status(500).json({ error: 'Internal Server Error while adding expenses' });
+    }
 };
 
 exports.deleteExpense = (req,res,next) => {

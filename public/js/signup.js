@@ -29,9 +29,9 @@ async function postSignup(event){
 
         const response = await axios.post('http://localhost:9000/user/signup', signupObj);
         if(response.status===201){
-            alert('user created successfully');
+            alert('user created successfully.\nKindly login now..');
             clearUserForm();
-            window.location.href = "expense.html";
+            window.location.href = "login.html";
         }
     }catch(err){
         if(err.response.status===400){

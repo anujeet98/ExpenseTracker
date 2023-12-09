@@ -15,55 +15,82 @@ document.addEventListener('DOMContentLoaded', getExpenses);
 
 //-------------------------------------------------------------------------------------------
 
-function addExpense(e) {
+async function addExpense(e) {
     e.preventDefault();
-
-    if(amount.value == '' || description.value == '' || category.value == ''){
-        alert('Kindly fill all the fields');
-    }
-    else{
-        let expenseObj = {
-            amount : amount.value,
-            description : description.value,
-            category : category.value
-        };
-        if(editing===true){
-            axios.put('http://localhost:9000/expense/update-expense/'+editId, expenseObj)
-            .then(result => {
-                //add Expense to list
+    try{
+        if(amount.value == '' || description.value == '' || category.value == ''){
+            alert('Kindly fill all the fields');
+        }
+        else{
+            let expenseObj = {
+                amount : amount.value,
+                description : description.value,
+                category : category.value,
+            };
+            if(editing===true){
+                const result = await axios.put('http://localhost:9000/expense/update-expense/'+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
+                
                 amount.value = '';
                 description.value = '';
                 category.value = '';
                 editing=false;
                 updateNewExpense_Li(result.data.updatedExpenseDetail);
-            })
-            .catch(err => alert('Something went wrong while editing expense: '+err));
-        }
-        else{
-            axios.post('http://localhost:9000/expense/add-expense', expenseObj)
-                .then(result => {
-                    //add Expense to list
-                    amount.value = '';
-                    description.value = '';
-                    category.value = '';
-                    updateNewExpense_Li(result.data.newExpenseDetail);
-                })
-                .catch(err => alert('Something went wrong while adding expense: '+err));
+            }
+            else{
+                const result = await axios.post('http://localhost:9000/expense/add-expense', expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
+
+                amount.value = '';
+                description.value = '';
+                category.value = '';
+                updateNewExpense_Li(result.data.newExpenseDetail);
+            }
         }
     }
+    catch(err){
+        alert(err.response.data.error);
+    }    
 };
 
-function getExpenses(){
-    editing=false;
-    axios.get('http://localhost:9000/expense/get-expenses')
-    .then(response => {
-        // expenses.innerHTML = '';
+async function getExpenses(){
+    let response;
+    try{
+        editing=false;
+        const token = localStorage.getItem("token");
+        const response = await axios.get('http://localhost:9000/expense/get-expenses', {headers: {"Authorization":token}});
         showExpenses(response);
-    })
-    .catch(err=>{
-        alert('Something went wrong while fetching expenses: '+err);
-    })
+    }
+    catch(err){
+        alert(err.response.data.error);
+    }
 }
+
+function deleteExpense(e,id){   
+    let itemSelect = e.target.parentElement;
+    axios.delete("http://localhost:9000/expense/delete-expense/"+id)
+    .then(()=>{
+        expenses.removeChild(itemSelect);
+        alert('Expense deleted..!!');
+    })
+    .catch(err => alert('Something went wrong while deleting expense: '+err));
+}
+
+function editExpense(e,id){
+    let itemSelect = e.target.parentElement;
+    const token = localStorage.getItem("token");
+    axios.get("http://localhost:9000/expense/get-expense/"+id, {headers: {"Authorization":token}})
+    .then(res => {
+        let obj = res.data;
+        amount.value = obj.amount;
+        description.value = obj.description;
+        category.value = obj.category;
+        editing=true;
+        editId=id;
+        expenses.removeChild(itemSelect);
+    })
+    .catch(err=> alert('Something went wrong while editing expense: '+err));
+}
+
+
 
 function updateNewExpense_Li(result){
     let obj = result;
@@ -124,29 +151,3 @@ function showExpenses(res){
 
     console.log('success');
 }
-
-function deleteExpense(e,id){   
-    let itemSelect = e.target.parentElement;
-    axios.delete("http://localhost:9000/expense/delete-expense/"+id)
-    .then(()=>{
-        expenses.removeChild(itemSelect);
-        alert('Expense deleted..!!');
-    })
-    .catch(err => alert('Something went wrong while deleting expense: '+err));
-}
-
-function editExpense(e,id){
-    let itemSelect = e.target.parentElement;
-    axios.get("http://localhost:9000/expense/get-expense/"+id)
-    .then(res => {
-        let obj = res.data;
-        amount.value = obj.amount;
-        description.value = obj.description;
-        category.value = obj.category;
-        editing=true;
-        editId=id;
-        expenses.removeChild(itemSelect);
-    })
-    .catch(err=> alert('Something went wrong while editing expense: '+err));
-}
-
