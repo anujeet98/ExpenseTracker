@@ -8,10 +8,15 @@ module.exports = class Users{
     }
 
     save(){
-        return db.execute(`INSERT INTO users(username,email,password) VALUES(?,?,?)`,[this.username, this.email, this.password]);
+        this.is_premium = false;
+        return db.execute(`INSERT INTO users(username,email,password,is_premium) VALUES(?,?,?,?)`,[this.username, this.email, this.password, this.is_premium]);
     }
 
     static findUserByEmail(email){
         return db.execute(`SELECT * FROM users WHERE email="${email}"`);
+    }
+
+    static findUserById(id){
+        return db.execute(`SELECT * FROM users WHERE id="${id}"`);
     }
 };

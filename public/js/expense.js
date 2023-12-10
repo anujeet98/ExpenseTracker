@@ -1,10 +1,11 @@
-var form = document.getElementById("ExpenseForm");
-var expenses = document.getElementById("expenses");
+const form = document.getElementById("ExpenseForm");
+const expenses = document.getElementById("expenses");
+
 
 // Expense details
-var amount = document.getElementById("amt");
-var description = document.getElementById("descr");
-var category = document.getElementById("cat");
+const amount = document.getElementById("amt");
+const description = document.getElementById("descr");
+const category = document.getElementById("cat");
 
 let editing=false;
 let editId;
@@ -25,17 +26,18 @@ async function addExpense(e) {
             let expenseObj = {
                 amount : amount.value,
                 description : description.value,
-                category : category.value,
+                category : category.value
             };
             if(editing===true){
                 //Edit Product
                 const response = await axios.put('http://localhost:9000/expense/update-expense/'+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
-                
-                amount.value = '';
-                description.value = '';
-                category.value = '';
-                editing=false;
-                updateNewExpense_Li(response.data.updatedExpenseDetail);
+                if(response.status === 201){
+                    amount.value = '';
+                    description.value = '';
+                    category.value = '';
+                    editing=false;
+                    updateNewExpense_Li(response.data.updatedExpenseDetail);
+                }
             }
             else{
                 //Add New Product
@@ -74,7 +76,10 @@ async function deleteExpense(e,id){
         const response = await axios.delete("http://localhost:9000/expense/delete-expense/"+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
             expenses.removeChild(itemSelect);
-            alert('Expense deleted..!!');
+            return alert('Expense deleted..!!');
+        }
+        if(response.status === 404){
+            alert(err.response.data.error);
         }
     }
     catch(err){
@@ -82,20 +87,27 @@ async function deleteExpense(e,id){
     }
 }
 
-function editExpense(e,id){
-    let itemSelect = e.target.parentElement;
-    const token = localStorage.getItem("token");
-    axios.get("http://localhost:9000/expense/get-expense/"+id, {headers: {"Authorization":token}})
-    .then(res => {
-        let obj = res.data;
-        amount.value = obj.amount;
-        description.value = obj.description;
-        category.value = obj.category;
-        editing=true;
-        editId=id;
-        expenses.removeChild(itemSelect);
-    })
-    .catch(err=> alert('Something went wrong while editing expense: '+err));
+async function editExpense(e,id){
+    try{
+        let itemSelect = e.target.parentElement;
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:9000/expense/get-expense/"+id, {headers: {"Authorization":token}});
+        if(response.status===200){
+            let obj = response.data;
+            amount.value = obj.amount;
+            description.value = obj.description;
+            category.value = obj.category;
+            editing=true;
+            editId=id;
+            expenses.removeChild(itemSelect);
+        }
+        if(response.status === 404){
+            alert(err.response.data.error);
+        }
+    }
+    catch(err){
+        alert(err.response.data.error);
+    }
 }
 
 

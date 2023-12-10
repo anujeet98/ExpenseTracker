@@ -2,19 +2,18 @@ const Expense = require('../models/expense-model.js');
 const db = require('../util/db.js');
 const jwt = require('jsonwebtoken');
 
+function validateInput(input){
+    if(input.length===0)
+        return true;
+}
+
 exports.getExpenses = async(req,res,next) => {
     try{
         // console.log('get Expenses hit');
-        const token = req.headers.authorization;
-        const verifiedJWT = jwt.verify(token, "secretkey");
-        const result = await Expense.fetchAll(verifiedJWT.userId);  
+        const result = await Expense.fetchAll(req.userId);  
         return res.status(200).json(result[0]);
     }
     catch(err){
-        if(err.name === 'JsonWebTokenError'){
-            console.error('JsonWebTokenError-postExpense: ',err);
-            return res.status(401).json({ error: 'Unauthorized - Invalid token' });
-        }
         console.error('ReadError-getExpenses',err);
         return res.status(500).json({error: "Internal Server Error while fetching expenses"});
     }
@@ -23,9 +22,11 @@ exports.getExpenses = async(req,res,next) => {
 exports.postExpense = async(req,res,next) => {
     try{
         // console.log('post Expense hit');
-        const token = req.headers.authorization;
-        const verifiedJWT = jwt.verify(token, "secretkey");
-        const expense = new Expense(req.body.amount, req.body.description, req.body.category, verifiedJWT.userId);
+        const {amount, description, category} = req.body;
+        if(validateInput(amount) || validateInput(description) || validateInput(category)){
+            return res.status(400).json({ error: 'bad input parameters' });
+        }
+        const expense = new Expense(amount, description, category, req.userId);
         const result = await expense.save();
         const resJSON = {
             "newExpenseDetail" : {
@@ -35,10 +36,6 @@ exports.postExpense = async(req,res,next) => {
         return res.status(201).json(resJSON);
     }
     catch(err){
-        if(err.name === 'JsonWebTokenError'){
-            console.error('JsonWebTokenError-postExpense: ',err);
-            return res.status(401).json({ error: 'Unauthorized - Invalid token' });
-        }
         console.error('WriteError-postExpense: ',err);
         return res.status(500).json({ error: 'Internal Server Error while adding expense' });
     }
@@ -46,52 +43,58 @@ exports.postExpense = async(req,res,next) => {
 
 exports.deleteExpense = async (req,res,next) => {
     try{
-        const token = req.headers.authorization;
-        const verifiedJWT = jwt.verify(token, "secretkey");
         const expenseId = req.params.id;
-        const result = await Expense.deleteExpense(expenseId, verifiedJWT.userId);
-        if(result[0].affectedRows == 1)
+        const result = await Expense.deleteExpense(expenseId, req.userId);
+        if(result[0].affectedRows === 1)
             res.status(204).json({status: "success"});
         else
             res.status(404).json({ error: 'Resource not found' });
     }
     catch(err){
-        if(err.name === 'JsonWebTokenError'){
-            console.error('JsonWebTokenError-postExpense: ',err);
-            return res.status(401).json({ error: 'Unauthorized - Invalid token' });
-        }
         console.error('DeleteError-deleteExpense',err);
         return res.status(500).json({ error: 'Internal Server Error while deleting expense' });
     }
 };
 
-exports.getExpense = (req,res,next) => {
-    // console.log('get Expense hit');
-    const expenseId = req.params.id;
-    Expense.fetchById(expenseId)
-        .then(result => {
-            res.json(result[0][0]);
-        })
-        .catch(err => {
-            console.error('ReadError-getExpense',err);
-            // res.status(400).json([]);
-        });
+exports.getExpense = async(req,res,next) => {
+    try{
+        // console.log('get Expense hit');
+        const expenseId = req.params.id;
+        const result = await Expense.fetchById(expenseId, req.userId);
+        if(result[0].length !== 0)
+            res.status(200).json(result[0][0]);
+        else
+            res.status(404).json({ error: 'Resource not found' });
+    }
+    catch(err){
+        console.error('ReadError-getExpense',err);
+        return res.status(500).json({ error: 'Internal Server Error while getting expense' });
+    }
 };
 
-exports.putExpense = (req,res,next) => {
-    const expense = new Expense(req.body.amount,req.body.description,req.body.category);
-    expense.update(req.params.id)
-        .then(result => {            
-            // console.log(result);
+exports.putExpense = async(req,res,next) => {
+    try{
+        const {amount, description, category} = req.body;
+        if(validateInput(amount) || validateInput(description) || validateInput(category)){
+            return res.status(400).json({ error: 'bad input parameters' });
+        }
+
+        const expense = new Expense(amount, description, category, req.userId);
+        const result = await expense.update(req.params.id);
+        console.log(result);
+        if(result[0].affectedRows === 1){
             let resJSON = {
                 "updatedExpenseDetail" : {
                     "id" : req.params.id, ...req.body
                 }
             }
-            res.json(resJSON);
-        })
-        .catch(err => {
-            console.error('WriteError-putExpense',err);
-            // res.status(400).json([]);
-        });
+            res.status(201).json(resJSON);
+        }
+        else
+            res.status(404).json({ error: 'Resource not found' });
+    }
+    catch(err){
+        console.error('WriteError-putExpense',err);
+        return res.status(500).json({ error: 'Internal Server Error while updating expense' });
+    }
 };
