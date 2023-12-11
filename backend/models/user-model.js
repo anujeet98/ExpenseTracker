@@ -12,6 +12,10 @@ module.exports = class Users{
         return db.execute(`INSERT INTO users(username,email,password,is_premium) VALUES(?,?,?,?)`,[this.username, this.email, this.password, this.is_premium]);
     }
 
+    static updateIsPremium(userId){
+        return db.execute('UPDATE users SET is_premium=1 WHERE id = ?',[userId]);
+    }
+
     static findUserByEmail(email){
         return db.execute(`SELECT * FROM users WHERE email="${email}"`);
     }
@@ -19,4 +23,5 @@ module.exports = class Users{
     static findUserById(id){
         return db.execute(`SELECT * FROM users WHERE id="${id}"`);
     }
+
 };
