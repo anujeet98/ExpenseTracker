@@ -3,13 +3,14 @@ const premiumFeatures = document.getElementById("premiumFeatures");
 
 
 viewLeaderBoard = () => {
-    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard(e)">Leaderboard</button>`;
+    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard()">Leaderboard</button>`;
 }
 
-async function getLeaderboard(e) {
+async function getLeaderboard() {
     try{
         const response = await axios.get('http://localhost:9000/premium/leaderboard', {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 200){
+            console.log(response)
             showLeaderBoard(response.data);
         }
     }

@@ -1,12 +1,12 @@
 const express = require('express');
-const membershipController = require('../contollers/membership-controller');
+const purchaseController = require('../contollers/purchase-controller');
 const authenticationMiddleware = require('../middleware/authentication');
 
 const router = express.Router();
 
-router.get('/premium-membership', authenticationMiddleware.auth, membershipController.purchaseMembership);
+router.get('/premium-membership', authenticationMiddleware.auth, purchaseController.purchaseMembership);
 
-router.put('/update-membership', authenticationMiddleware.auth, membershipController.updateMembershipOrder);
+router.put('/update-membership', authenticationMiddleware.auth, purchaseController.updateMembershipOrder);
 
 
 

@@ -1,4 +1,5 @@
 const Expense = require('../models/expense-model.js');
+const User = require('../models/user-model.js')
 const db = require('../util/db.js');
 const jwt = require('jsonwebtoken');
 
@@ -19,7 +20,7 @@ exports.getExpenses = async(req,res,next) => {
     }
 };
 
-exports.postExpense = async(req,res,next) => {
+exports.addExpense = async(req,res,next) => {
     try{
         // console.log('post Expense hit');
         const {amount, description, category} = req.body;
@@ -27,10 +28,15 @@ exports.postExpense = async(req,res,next) => {
             return res.status(400).json({ error: 'bad input parameters' });
         }
         const expense = new Expense(amount, description, category, req.userId);
-        const result = await expense.save();
+        
+        const expensePromise = expense.save();
+        const userPromise = User.updateTotalExpense(amount, req.userId);
+
+        const [expenseRes, userRes] = await Promise.all([expensePromise, userPromise]);
+
         const resJSON = {
             "newExpenseDetail" : {
-                "id" : result[0].insertId, ...req.body
+                "id" : expenseRes[0].insertId, ...req.body
             }
         }
         return res.status(201).json(resJSON);
@@ -44,9 +50,19 @@ exports.postExpense = async(req,res,next) => {
 exports.deleteExpense = async (req,res,next) => {
     try{
         const expenseId = req.params.id;
+        const old_expense = await Expense.fetchById(expenseId, req.userId);
         const result = await Expense.deleteExpense(expenseId, req.userId);
-        if(result[0].affectedRows === 1)
+        if(result[0].affectedRows === 1){
             res.status(204).json({status: "success"});
+            try{
+                const amtToRemove = old_expense[0][0].amount * -1;
+                await User.updateTotalExpense(amtToRemove,req.userId);
+            }
+            catch(err){
+                console.error('updateError-deleteExpense',err);
+                return res.status(500).json({ error: 'Internal Server Error while deleting expense' });
+            }
+        }
         else
             res.status(404).json({ error: 'Resource not found' });
     }
@@ -72,16 +88,26 @@ exports.getExpense = async(req,res,next) => {
     }
 };
 
-exports.putExpense = async(req,res,next) => {
+exports.updateExpense = async(req,res,next) => {
     try{
         const {amount, description, category} = req.body;
         if(validateInput(amount) || validateInput(description) || validateInput(category)){
             return res.status(400).json({ error: 'bad input parameters' });
         }
 
+        const old_expense = await Expense.fetchById(req.params.id, req.userId);
         const expense = new Expense(amount, description, category, req.userId);
         const result = await expense.update(req.params.id);
         if(result[0].affectedRows === 1){
+            try{
+                const amtToUpdate = amount-old_expense[0][0].amount;
+                await User.updateTotalExpense(amtToUpdate,req.userId);
+            }
+            catch(err){
+                console.error('updateError-updateExpense',err);
+                return res.status(500).json({ error: 'Internal Server Error while updating total expense' });
+            }
+
             let resJSON = {
                 "updatedExpenseDetail" : {
                     "id" : req.params.id, ...req.body

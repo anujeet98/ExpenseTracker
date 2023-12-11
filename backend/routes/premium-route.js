@@ -1,10 +1,10 @@
 const express = require('express');
 
-const leaderboardController = require('../contollers/leaderboard-controller');
+const premiumController = require('../contollers/premium-feature-controller');
 const authenticationMiddleware = require('../middleware/authentication');
 
 const router = express.Router();
 
-router.get('/leaderboard', authenticationMiddleware.auth, leaderboardController.leaderboardController);
+router.get('/leaderboard', authenticationMiddleware.auth, premiumController.getLeaderBoard);
 
 module.exports = router;

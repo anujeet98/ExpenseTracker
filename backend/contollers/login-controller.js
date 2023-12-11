@@ -23,11 +23,12 @@ module.exports.postSignup = async(req,res,next) => {
         //else, user doesn't exists -> Encrypt password -> create new record
     
         const hash = await bcrypt.hash(password, 10);
-        const newUser = new User(username, email, hash);
+        const newUser = new User(username, email, hash, false, 0);
 
         const savedUser = await newUser.save();
         return res.status(201).json(savedUser[0]);
     }catch(err){
+        console.log(err);
         res.status(500).json({error: 'SignupError: '+err});
     }
 }
