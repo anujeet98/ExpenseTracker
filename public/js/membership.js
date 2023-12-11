@@ -1,7 +1,21 @@
 const premiumBtn = document.getElementById("premiumBtn");
+const premiumTag = document.getElementById("premiumTag");
 
 
 premiumBtn.addEventListener('click', buyPremium);
+document.addEventListener('DOMContentLoaded', membershipStatus);
+
+function membershipStatus() {
+    if(localStorage.getItem("isPremium") === "true"){
+        premiumTag.style.visibility = 'visible';
+        premiumBtn.style.visibility = 'hidden';
+    }
+    else{
+        premiumTag.style.visibility = 'hidden';
+        premiumBtn.style.visibility = 'visible';
+    }
+};
+
 
 
 async function buyPremium(e){
@@ -18,6 +32,8 @@ async function buyPremium(e){
                     const updateResponse = await axios.put('http://localhost:9000/purchase/update-membership',response ,{headers: {"Authorization":token}} );
                     console.log(updateResponse);
                     if(updateResponse.status === 204){
+                        localStorage.setItem("isPremium",true);
+                        membershipStatus();
                         return alert('payment successful for premium membership');
                     }
                     else{

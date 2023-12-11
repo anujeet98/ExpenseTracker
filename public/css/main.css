@@ -1,0 +1,27 @@
+
+.header{
+    /* display: flex; */
+    padding: 1%;
+}
+
+#premiumBtn{
+    padding: 0.6%;
+    visibility: hidden;
+}
+
+#premiumTag{
+    display: inline-block;
+    white-space: nowrap;
+    margin-left: 1% ;
+    padding: 1%;
+    border: 1px solid black;
+    background-color: rgb(222, 222, 0);
+    
+    visibility: hidden;
+    float: right;
+}
+
+#premiumTag > span {
+    text-align: center;
+    max-width: 100%; /* Ensure text doesn't overflow when shrinking */
+  }

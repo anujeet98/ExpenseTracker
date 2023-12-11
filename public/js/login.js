@@ -28,6 +28,7 @@ async function getLogin(event){
         const response = await axios.post('http://localhost:9000/user/login', getLogin);
         if(response.status===201){
             localStorage.setItem("token",response.data.token);
+            localStorage.setItem("isPremium",response.data.isPremium);
             alert(response.data.message);
             clearUserForm();
             window.location.href = "expense.html";
