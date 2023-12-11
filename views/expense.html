@@ -15,6 +15,9 @@
         <h6 id="premiumTag"><span>Premium User</span></h6>
     </div><hr>
     <!-- Expense Tracker Form -->
+    <div>
+        <button id="leaderboardBtn">Leaderboard</button>
+    </div>
     <form id="ExpenseForm" class="form-group">
         <label for="amt">Expense Amount: </label>
         <input type="number" name="amount" id="amt" min="1" required>
@@ -34,11 +37,13 @@
 
     <!-- Add expenses here -->
     <ul id="expenses"></ul>
+    <ul id="leaderboard"></ul>
 
     <!-- JS for the backend logic -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
     <script src="../public/js/expense.js"></script>
     <script src="../public/js/membership.js"></script>
+    <script src="../public/js/leaderboard.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 
