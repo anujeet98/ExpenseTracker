@@ -20,6 +20,7 @@ function membershipStatus() {
     if(decoded.isPremium === true){
         premiumTag.style.visibility = 'visible';
         premiumBtn.style.visibility = 'hidden';
+        viewLeaderBoard();
     }
     else{
         premiumTag.style.visibility = 'hidden';

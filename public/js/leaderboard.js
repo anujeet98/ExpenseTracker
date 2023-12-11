@@ -1,9 +1,10 @@
 const leaderboard = document.getElementById("leaderboard");
-const leaderboardBtn = document.getElementById("leaderboardBtn");
+const premiumFeatures = document.getElementById("premiumFeatures");
 
 
-leaderboardBtn.addEventListener('click',getLeaderboard);
-
+viewLeaderBoard = () => {
+    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard(e)">Leaderboard</button>`;
+}
 
 async function getLeaderboard(e) {
     try{
