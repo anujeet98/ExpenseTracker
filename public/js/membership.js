@@ -5,8 +5,19 @@ const premiumTag = document.getElementById("premiumTag");
 premiumBtn.addEventListener('click', buyPremium);
 document.addEventListener('DOMContentLoaded', membershipStatus);
 
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
 function membershipStatus() {
-    if(localStorage.getItem("isPremium") === "true"){
+    const decoded = parseJwt(localStorage.getItem("token"));
+    if(decoded.isPremium === true){
         premiumTag.style.visibility = 'visible';
         premiumBtn.style.visibility = 'hidden';
     }
@@ -29,16 +40,20 @@ async function buyPremium(e){
                 "key": response.data.key_id,
                 "order_id": response.data.order.id,
                 "handler": async function(response) {
-                    const updateResponse = await axios.put('http://localhost:9000/purchase/update-membership',response ,{headers: {"Authorization":token}} );
-                    console.log(updateResponse);
-                    if(updateResponse.status === 204){
-                        localStorage.setItem("isPremium",true);
-                        membershipStatus();
-                        return alert('payment successful for premium membership');
+                    try{
+                        const updateResponse = await axios.put('http://localhost:9000/purchase/update-membership',response ,{headers: {"Authorization":token}} );
+                        console.log(updateResponse);
+                        if(updateResponse.status === 200){
+                            //add ispremium token in LS
+                            localStorage.setItem("token",updateResponse.data.token);
+                            membershipStatus();
+                            return alert('payment successful for premium membership');
+                        }
                     }
-                    else{
-                        console.log("success",updateResponse.data.error);
-                        //throw new Error(updateResponse.data.error);
+                    catch(err){
+                        if(err.response.status >= 400){
+                            return alert(err.response.data.error);
+                        }
                     }
                 }
             }
@@ -53,15 +68,14 @@ async function buyPremium(e){
                 if(updateResponse.status === 204){
                     return alert("Payment failed. Please try again");
                 }
-                else{
-                    console.log("fail",updateResponse.data.error);
-                    //throw new Error(updateResponse.data.error);
-                }
             });
         }
     }
     catch(err){
-        console.log("error");
+        console.log(err);
+        if(err.response.status >= 400){
+            return alert(err.response.data.error);
+        }
         alert(err.response.data.error);
     }
 }

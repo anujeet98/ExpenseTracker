@@ -43,7 +43,8 @@ module.exports.postLogin = async(req,res,next) => {
             //user email exists => verify password
             const passwordMatch = await bcrypt.compare(password, userExists[0][0].password);
             if(passwordMatch){
-                return res.status(201).json({message: "User login successful", status: "success", isPremium: userExists[0][0].is_premium === 0?false:true, token: jwt.sign({userId:userExists[0][0].id}, process.env.AUTH_KEY) });
+                const isPremium = userExists[0][0].is_premium === 0?false:true
+                return res.status(201).json({message: "User login successful", status: "success", token: jwt.sign({userId:userExists[0][0].id, isPremium: isPremium}, process.env.AUTH_KEY) });
             }
             else{
                 return res.status(401).json({error: "Incorrect user password.\nUser not authorized."});

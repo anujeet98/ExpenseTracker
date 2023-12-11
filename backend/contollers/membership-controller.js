@@ -1,6 +1,7 @@
 const Razorpay = require('razorpay');
 const Order = require('../models/order-model');
 const User = require('../models/user-model');
+const jwt = require('jsonwebtoken');
 
 
 exports.purchaseMembership = async(req,res,next) => {
@@ -10,7 +11,7 @@ exports.purchaseMembership = async(req,res,next) => {
             key_secret: process.env.RAZORPAY_SECRET
         });
         const amount = 250;
-
+        
         let order;
         try{
             order = await rzp.orders.create({amount, currency: "INR"});
@@ -36,26 +37,27 @@ exports.updateMembershipOrder = async(req,res,next) => {
     try{
         const{razorpay_order_id,razorpay_payment_id,razorpay_signature} = req.body;
         let orderObj;
-        let updateUser = Promise.resolve();
-        if(Object.keys(req.body).length===1){
-            //update status failed
+
+        if(Object.keys(req.body).length===1) //update status failed
             orderObj = new Order(razorpay_order_id, null, "FAILED", req.userId);
-        }
-        else{
-            //update status success/payment_id/isPremium
+        else //update status success/payment_id/isPremium
             orderObj = new Order(razorpay_order_id, razorpay_payment_id, "SUCCESS", req.userId);
-            updateUser = User.updateIsPremium(req.userId);
 
-        }
-        const updateOrder = orderObj.updateOrderPayment();
+        const updateOrderPromise = orderObj.updateOrderPayment();
 
-        const [updatedOrder, updatedUser] = await Promise.all([updateOrder, updateUser]);   
+        let updateUserPromise = Promise.resolve();
+
+        //update user isPremium
+        if(Object.keys(req.body).length!==1)
+            updateUserPromise = User.updateIsPremium(req.userId);
+        
+
+        const [updatedOrder, updatedUser] = await Promise.all([updateOrderPromise, updateUserPromise]);   
         if(updatedOrder[0].affectedRows === 1){
-            return res.status(204).json();
+            return res.status(200).json({token: jwt.sign({userId:req.userId, isPremium: true}, process.env.AUTH_KEY)});
         }
         else{
-            console.log("res not found");
-            return res.status(300).json({ error: 'Resource not found' });
+            return res.status(404).json({ error: 'Resource not found' });
         }
                 
     }

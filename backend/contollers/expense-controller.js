@@ -81,7 +81,6 @@ exports.putExpense = async(req,res,next) => {
 
         const expense = new Expense(amount, description, category, req.userId);
         const result = await expense.update(req.params.id);
-        console.log(result);
         if(result[0].affectedRows === 1){
             let resJSON = {
                 "updatedExpenseDetail" : {

@@ -117,7 +117,7 @@ function updateNewExpense_Li(result){
 
     let li = document.createElement('li');
     li.className = "expense";
-    li.appendChild(document.createTextNode(obj.amount + " - " + obj.category + " - " + obj.description + "     "));
+    li.appendChild(document.createTextNode(obj.amount + " - " + obj.description + " - " + obj.category + "     "));
     li.appendChild(document.createElement("span"))
 
     // create delete button
