@@ -4,7 +4,7 @@ const db = require('../util/db');
 exports.getLeaderBoard = async(req,res,next) => {
     try{
         const user = req.user;
-        const result = await User.findAll({attributes: ['username', 'total_expense']});
+        const result = await User.findAll({attributes: ['username', 'total_expense'], order: [['total_expense', 'DESC']]});
         res.status(200).json(result);
     }
     catch(err){

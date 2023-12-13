@@ -4,9 +4,12 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user-model');
 
 const inputValidator = require('../util/input-validator');
+const sequelize = require('../util/db');
 
 module.exports.signup = async(req,res,next) => {
+    let trans;
     try{
+        trans = await sequelize.transaction();
         const {username, email, password} = req.body;
         if(inputValidator(username) || inputValidator(email) || inputValidator(password)){
             return res.status(400).json({error: "bad input parameters"});
@@ -19,10 +22,13 @@ module.exports.signup = async(req,res,next) => {
 
         //else, user doesn't exists -> Encrypt password -> create new record
         const hash = await bcrypt.hash(password, 10);
-        const newUser = await User.create({username: username, email:email, password:hash});
+        await User.create({username: username, email:email, password:hash}, {transaction: trans});
 
+        await trans.commit();
         return res.status(201).json({message: "success"});
     }catch(err){
+        if(trans)
+            trans.rollback();
         console.log("SignupError- ",err);
         res.status(500).json({error: 'Internal server error while signup'});
     }
