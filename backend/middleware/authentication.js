@@ -4,14 +4,13 @@ const User = require('../models/user-model');
 module.exports.auth = async(req,res,next) => {
     try{
         const token = req.headers.authorization;
-        const verifiedJWT = jwt.verify(token, process.env.AUTH_KEY);
-        const userExists = await User.findUserById(verifiedJWT.userId);
-        if(userExists[0].length!==0){
-            req.userId = verifiedJWT.userId;
+        const verifiedToken = jwt.verify(token, process.env.AUTH_KEY);
+        const verifiedUser = await User.findByPk(verifiedToken.userId);
+        if(verifiedUser!=null){
+            req.user = verifiedUser;
             next();
         }
         else{
-            console.error("UserNotFound");
             return res.status(404).json({ error: 'User not found' });
         }
     }
