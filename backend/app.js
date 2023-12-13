@@ -13,6 +13,7 @@ const expenseRoutes = require('./routes/expense-route');
 const userRoutes = require('./routes/user-route');
 const purchaseRoutes = require('./routes/purchase-route');
 const premiumRoutes = require('./routes/premium-route');
+const passwordRoutes = require('./routes/password-route');
 
 //---------------------------------------------------------------
 
@@ -29,6 +30,7 @@ app.use('/user', userRoutes);
 app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
+app.use('/password', passwordRoutes);
 
 //-------------------------------------------------------------
 

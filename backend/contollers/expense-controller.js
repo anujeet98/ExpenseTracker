@@ -27,16 +27,17 @@ exports.addExpense = async(req,res,next) => {
             return res.status(400).json({ error: 'bad input parameters' });
         }
 
-        const user = req.user;
-        const [expenseRes, userRes] = await Promise.all([
-            user.createExpense({ amount, description, category }, { transaction: tran }),
-            user.update({ total_expense: user.total_expense + +amount }, { transaction: tran })
-          ]);
         const resJSON = {
             "newExpenseDetail" : {
                 "id" : expenseRes.id, ...req.body
             }
         }
+
+        const user = req.user;
+        const [expenseRes, userRes] = await Promise.all([
+            user.createExpense({ amount, description, category }, { transaction: tran }),
+            user.update({ total_expense: user.total_expense + +amount }, { transaction: tran })
+          ]);
         await tran.commit();
         return res.status(201).json(resJSON);
     }
