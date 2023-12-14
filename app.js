@@ -8,6 +8,7 @@ const sequelize = require('./util/db');
 const User = require('./models/user-model');
 const Order = require('./models/order-model');
 const Expense = require('./models/expense-model');
+const ForgetPassword = require('./models/forget-password');
 
 const expenseRoutes = require('./routes/expense-route');
 const userRoutes = require('./routes/user-route');
@@ -23,6 +24,7 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json({extended: false}));
+app.use(express.static('public'));
 
 //--------------------------------------------------------------
 
@@ -39,6 +41,10 @@ Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(ForgetPassword);
+ForgetPassword.belongsTo(User);
+
 
 //-------------------------------------------------------------
 

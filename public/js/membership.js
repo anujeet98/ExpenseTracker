@@ -52,9 +52,7 @@ async function buyPremium(e){
                         }
                     }
                     catch(err){
-                        if(err.response.status >= 400){
-                            return alert(err.response.data.error);
-                        }
+                        return alert(err.response.data.error);
                     }
                 }
             }
@@ -64,19 +62,16 @@ async function buyPremium(e){
             // e.preventDefault();
 
             rzpPayment.on('payment.failed', async ()=>{
-                const updateResponse = await axios.put('http://localhost:9000/purchase/update-membership',{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
-                
-                if(updateResponse.status === 204){
-                    return alert("Payment failed. Please try again");
+                try{
+                    await axios.put('http://localhost:9000/purchase/update-membership',{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
+                }
+                catch(err){
+                    alert(err.response.data.error);
                 }
             });
         }
     }
     catch(err){
-        console.log(err);
-        if(err.response.status >= 400){
-            return alert(err.response.data.error);
-        }
         alert(err.response.data.error);
     }
 }

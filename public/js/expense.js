@@ -78,9 +78,6 @@ async function deleteExpense(e,id){
             expenses.removeChild(itemSelect);
             return alert('Expense deleted..!!');
         }
-        if(response.status === 404){
-            alert(err.response.data.error);
-        }
     }
     catch(err){
         alert(err.response.data.error);
@@ -100,9 +97,6 @@ async function editExpense(e,id){
             editing=true;
             editId=id;
             expenses.removeChild(itemSelect);
-        }
-        if(response.status === 404){
-            alert(err.response.data.error);
         }
     }
     catch(err){
