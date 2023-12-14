@@ -1,0 +1,25 @@
+-Sample .env file:
+
+AUTH_KEY = ""
+
+RAZORPAY_KEY = ""
+
+RAZORPAY_SECRET = ""
+
+DB_NAME = ""
+
+DB_USERNAME = ""
+
+DB_PASSWORD = ""
+
+APP_PORT = ""
+
+MJ_APIKEY_PUBLIC = ""
+
+MJ_APIKEY_PRIVATE = ""
+
+SIB_SENDER_EMAIL = ""
+
+SIB_SENDER_NAME = ""
+
+APP_URL = ""
