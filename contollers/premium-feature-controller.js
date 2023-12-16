@@ -21,11 +21,12 @@ exports.getReport = async(req, res, next) => {
         const filename = `expense_${user.id}_${new Date()}.csv`;
         const data = JSON.stringify(expenses);
         const file_url = await AwsS3Service.uploadToS3(filename, data);
-        console.log(file_url)
+
+        await user.createDownload({download_url: file_url});
         res.status(201).json({status:"success", reportURL: file_url});
     }
     catch(err){
         console.log('uploadExpenseError-getReport: ',err);
-        res.status(500).json({error: 'something went wrong'})
+        res.status(500).json({error: 'something went wrong', error_context: err});
     }
 };
