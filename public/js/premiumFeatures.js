@@ -1,4 +1,4 @@
-const leaderboard = document.getElementById("leaderboard");
+const leaderboardContainer = document.getElementById("leaderboardContainer");
 const premiumFeatures = document.getElementById("premiumFeatures");
 
 viewPremiumFeatures = () => {
@@ -26,10 +26,10 @@ async function getLeaderboard() {
 }
 
 function showLeaderBoard(data){
-    leaderboard.innerHTML = "";
-    leaderboard.innerHTML += "<div><h1>Leaderboard:</h1></div><br>";
+    leaderboardContainer.innerHTML = "";
+    leaderboardContainer.innerHTML += "<div><h1>Leaderboard:</h1></div><br>";
     data.forEach((element,i) => {
-        leaderboard.innerHTML += `<div><p></p>${i+1}] Username: ${element.username}; Total Expense: ${element.total_expense}</div><br>`;
+        leaderboardContainer.innerHTML += `<div><p></p>${i+1}] Username: ${element.username}; Total Expense: ${element.total_expense}</div><br>`;
     });
 }
 

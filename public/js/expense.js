@@ -1,5 +1,6 @@
 const form = document.getElementById("ExpenseForm");
-const expenses = document.getElementById("expenses");
+const expensesContainer = document.getElementById("expensesContainer");
+const pageContainer = document.getElementById("pageContainer");
 
 
 // Expense details
@@ -12,7 +13,7 @@ let editId;
 
 // EventListers
 form.addEventListener('submit',addExpense);
-document.addEventListener('DOMContentLoaded', getExpenses);
+document.addEventListener('DOMContentLoaded', ()=>{getExpenses(1)});
 
 //-------------------------------------------------------------------------------------------
 
@@ -56,17 +57,21 @@ async function addExpense(e) {
     }    
 };
 
-async function getExpenses(){
-    let response;
+async function getExpenses(pageNo){
+    let page = pageNo;
+    console.log(pageNo);
     try{
         editing=false;
         const token = localStorage.getItem("token");
-        const response = await axios.get('http://localhost:9000/expense/get-expenses', {headers: {"Authorization":token}});
-        if(response.status === 200)
-            showExpenses(response);
+        const response = await axios.get(`http://localhost:9000/expense/get-expenses?page=${page}`, {headers: {"Authorization":token}});
+        if(response.status === 200){
+            showExpenses(response.data.expenses);
+            showPagination(response.data);
+        }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response)     
+            alert(err.response.data.error);
     }
 }
 
@@ -75,7 +80,7 @@ async function deleteExpense(e,id){
         let itemSelect = e.target.parentElement;
         const response = await axios.delete("http://localhost:9000/expense/delete-expense/"+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
-            expenses.removeChild(itemSelect);
+            expensesContainer.removeChild(itemSelect);
             return alert('Expense deleted..!!');
         }
     }
@@ -96,7 +101,7 @@ async function editExpense(e,id){
             category.value = obj.category;
             editing=true;
             editId=id;
-            expenses.removeChild(itemSelect);
+            expensesContainer.removeChild(itemSelect);
         }
     }
     catch(err){
@@ -130,13 +135,15 @@ function updateNewExpense_Li(result){
     li.appendChild(editBtn);
 
     // add new list item to expense UL
-    expenses.appendChild(li);
+    expensesContainer.appendChild(li);
     // console.log(obj);
 }
 
 function showExpenses(res){
-    for(let i=0; i< res.data.length; i++){
-        let obj = res.data[i];
+    expensesContainer.innerHTML = "";
+    for(let i=0; i< res.length; i++){
+        let obj = res[i];
+        
 
         let li = document.createElement('li');
         li.className = "expense";
@@ -159,9 +166,30 @@ function showExpenses(res){
         li.appendChild(editBtn);
 
         // add new list item to expense UL
-        expenses.appendChild(li);
+        expensesContainer.appendChild(li);
         // console.log(obj);
     }
 
     console.log('success');
+}
+
+
+function showPagination(res){
+    pageContainer.innerHTML = "";
+    if(res.hasPreviousPage)
+        createPageButton(res.previousPage, false);
+    createPageButton(res.currentPage, true);
+    if(res.hasNextPage)
+        createPageButton(res.nextPage, false);
+}
+
+function createPageButton(pageNo, isCurrentPage){
+    const pageButton = document.createElement('button');
+    pageButton.onclick = () => {
+        getExpenses(pageNo); 
+    }
+    pageButton.className = "pageBtn";
+    pageButton.appendChild(document.createTextNode(pageNo));
+
+    pageContainer.appendChild(pageButton);
 }
