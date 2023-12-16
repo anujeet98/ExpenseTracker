@@ -8,8 +8,27 @@ const inputValidator = require('../util/input-validator');
 exports.getExpenses = async(req,res,next) => {
     try{
         const user = req.user;
-        const result = await user.getExpenses();
-        return res.status(200).json(result);
+        const page = +req.query.page;
+        const ITEMS_PER_PAGE = +process.env.EXPENSE_PER_PAGE;
+
+        const [totalExpenseCount, expenses] = await Promise.all([
+            Expense.count({where:{userId: user.id}}),
+            Expense.findAll({
+                offset: (page-1)*ITEMS_PER_PAGE,
+                limit: ITEMS_PER_PAGE,
+                where: {userId: user.id}
+            })
+        ]);
+        const resJSON = {
+            expenses: expenses,
+            hasNextPage: totalExpenseCount > (page*process.env.EXPENSE_PER_PAGE),
+            hasPreviousPage: page > 1,
+            previousPage: page-1,
+            currentPage: page,
+            nextPage: page+1,
+            lastsPage: Math.ceil(totalExpenseCount/ITEMS_PER_PAGE)
+        }   
+        return res.status(200).json(resJSON);
     }
     catch(err){
         console.error('ReadError-getExpenses',err);

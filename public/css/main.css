@@ -25,3 +25,8 @@
     text-align: center;
     max-width: 100%; /* Ensure text doesn't overflow when shrinking */
   }
+
+
+  .pageBtn{
+    margin: 1% 1%;
+  }

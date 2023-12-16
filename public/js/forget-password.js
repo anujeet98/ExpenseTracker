@@ -2,7 +2,7 @@ const forgetPasswordForm = document.getElementById("forgetPasswordForm");
 const email = document.getElementById("email");
 forgetPasswordForm.addEventListener('submit',forgetPassword);
     
-document.addEventListener('DOMContentLoaded', (e)=>{});
+// document.addEventListener('DOMContentLoaded', (e)=>{});
 
 
 async function forgetPassword(e){
