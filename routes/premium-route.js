@@ -6,5 +6,5 @@ const authenticationMiddleware = require('../middleware/authentication');
 
 
 router.get('/leaderboard', authenticationMiddleware.auth, premiumController.getLeaderBoard);
-
+router.get('/download', authenticationMiddleware.auth, premiumController.getReport);
 module.exports = router;

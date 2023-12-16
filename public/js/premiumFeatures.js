@@ -42,19 +42,17 @@ function showReportDownloadBtn(){
 
 async function downloadReport(){
     try{
-        const response = {status: 201, data: {reportURL: "https://drive.google.com/file/d/1ahCPosLSELYrQFLpWzHoIZS4pPMu2e13/view?usp=drive_link"}};//await axios.get('http://localhost:9000/download/', {headers: {"Authorization":token}});
-        console.log('hello');
+        const response = await axios.get('http://localhost:9000/premium/download/', {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status===201){
             const a = document.createElement('a');
             a.href = response.data.reportURL;
             a.download = 'expenseReport.csv';
             a.click();
         }
-        else{
-            throw new Error(response.data.message);
-        }
     }
     catch(err){
-        // alert(err.response.data.error);
+        alert(err.response.data.error);
     }
 }
+
+// {status: 201, data: {reportURL: "https://drive.google.com/file/d/1ahCPosLSELYrQFLpWzHoIZS4pPMu2e13/view?usp=drive_link"}};//
