@@ -11,7 +11,7 @@ module.exports.signup = async(req,res,next) => {
     try{
         trans = await sequelize.transaction();
         const {username, email, password} = req.body;
-        if(inputValidator(username) || inputValidator(email) || inputValidator(password)){
+        if(inputValidator.text(username) || inputValidator.text(email) || inputValidator.text(password)){
             return res.status(400).json({error: "bad input parameters"});
         }
         const existingUser = await User.findOne({where: {email: email}});
@@ -37,7 +37,7 @@ module.exports.signup = async(req,res,next) => {
 module.exports.login = async(req,res,next) => {
     try{
         const {email, password} = req.body;
-        if(inputValidator(email) || inputValidator(password)){
+        if(inputValidator.text(email) || inputValidator.text(password)){
             return res.status(400).json({error: "bad input parameters"});
         }
         const existingUser = await User.findOne({where: {email: email}});

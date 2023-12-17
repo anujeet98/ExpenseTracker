@@ -77,7 +77,7 @@ exports.updatePassword = async (req, res, next) => {
         const requestId = req.body.requestId;
         const newPassword = req.body.newPassword;
 
-        if(inputValidator(requestId) || inputValidator(newPassword)){
+        if(inputValidator.text(requestId) || inputValidator.text(newPassword)){
             return res.status(400).json({ error: 'bad input parameters' });
         }
 

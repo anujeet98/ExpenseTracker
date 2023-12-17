@@ -8,8 +8,13 @@ const inputValidator = require('../util/input-validator');
 exports.getExpenses = async(req,res,next) => {
     try{
         const user = req.user;
+        if(inputValidator.number(req.query.page) || inputValidator.number(req.query.rowsperpage)){
+            return res.status(400).json({ error: 'bad input parameters' });
+        }
+
         const page = +req.query.page;
-        const ITEMS_PER_PAGE = +process.env.EXPENSE_PER_PAGE;
+        const ITEMS_PER_PAGE = +req.query.rowsperpage;
+        //+process.env.EXPENSE_PER_PAGE;
 
         const [totalExpenseCount, expenses] = await Promise.all([
             Expense.count({where:{userId: user.id}}),
@@ -21,7 +26,7 @@ exports.getExpenses = async(req,res,next) => {
         ]);
         const resJSON = {
             expenses: expenses,
-            hasNextPage: totalExpenseCount > (page*process.env.EXPENSE_PER_PAGE),
+            hasNextPage: totalExpenseCount > (page*ITEMS_PER_PAGE),
             hasPreviousPage: page > 1,
             previousPage: page-1,
             currentPage: page,
@@ -42,7 +47,7 @@ exports.addExpense = async(req,res,next) => {
         tran = await sequelize.transaction();
         const {amount, description, category} = req.body;
 
-        if(inputValidator(amount) || inputValidator(description) || inputValidator(category)){
+        if(inputValidator.text(amount) || inputValidator.text(description) || inputValidator.text(category)){
             return res.status(400).json({ error: 'bad input parameters' });
         }
 
@@ -122,7 +127,7 @@ exports.updateExpense = async(req,res,next) => {
         const user = req.user;
         const expenseId = req.params.id;
 
-        if(inputValidator(amount) || inputValidator(description) || inputValidator(category)){
+        if(inputValidator.text(amount) || inputValidator.text(description) || inputValidator.text(category)){
             return res.status(400).json({ error: 'bad input parameters' });
         }
 
