@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 // const compression = require('compression');
 
 
@@ -65,12 +66,20 @@ Download.belongsTo(User);
 
 
 //-------------------------------------------------------------
+//for self signed SSL certificate use
+// const privateKey = fs.readFileSync('server.key');
+// const certificate = fs.readFileSync('server.cert');
 
 const serverSync = async() => {
     try{
-        await sequelize.sync
         // await sequelize.sync({force:true});
-        app.listen(process.env.APP_PORT);
+        await sequelize.sync
+        app.listen(process.env.APP_PORT || 3000);
+
+        // https
+        //     .createServer({key: privateKey, cert: certificate},app)
+        //     .listen(process.env.APP_PORT || 3000);
+
         console.log(`Server is running on PORT: ${process.env.APP_PORT}`);
     }
     catch(err){
