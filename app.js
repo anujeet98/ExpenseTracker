@@ -3,6 +3,12 @@ const express = require('express');
 const cors = require('cors');   
 const bodyParser = require('body-parser');
 const {Sequelize} = require('sequelize');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
+// const compression = require('compression');
+
 
 const sequelize = require('./util/db');
 const User = require('./models/user-model');
@@ -19,7 +25,14 @@ const passwordRoutes = require('./routes/password-route');
 
 //---------------------------------------------------------------
 
+const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'access.log'), 
+    {flags: 'a'});
+
 const app = express();
+app.use(helmet()); 
+// app.use(compression());
+app.use(morgan('combined', {stream: accessLogStream}));
 
 //---------------------------------------------------------------
 
@@ -34,6 +47,7 @@ app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
 app.use('/password', passwordRoutes);
+
 
 //-------------------------------------------------------------
 
