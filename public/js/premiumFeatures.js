@@ -18,7 +18,7 @@ async function getLeaderboard() {
         }
     }
     catch(err){
-        if(err.response.status>=401){
+        if(err.response){
             alert(err.response.data.error);
         }
     }
@@ -50,7 +50,8 @@ async function downloadReport(){
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }
 

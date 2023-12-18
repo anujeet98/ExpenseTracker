@@ -18,7 +18,8 @@ async function forgetPassword(e){
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }
 
