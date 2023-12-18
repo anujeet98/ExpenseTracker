@@ -3,6 +3,8 @@ const email = document.getElementById("email");
 const password = document.getElementById("password");
 const submitBtn = document.getElementById("submit");
 
+const BACKEND_ADDRESS = '54.234.60.93:3000';
+
 //=====================================================================================================
 
 
@@ -26,9 +28,7 @@ async function postSignup(event){
             email: email.value,
             password: password.value
         };
-        console.log('hello');
-        console.log(`${process.env.BACKEND_HOST}`)
-        const response = await axios.post(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/user/signup`, signupObj);
+        const response = await axios.post(`http://${BACKEND_ADDRESS}/user/signup`, signupObj);
         if(response.status===201){
             alert('user created successfully.\nKindly login now..');
             clearUserForm();
