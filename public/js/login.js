@@ -33,10 +33,10 @@ async function getLogin(event){
             window.location.href = "expense.html";
         }
     }catch(err){
-        if(err.response.status >= 401 && err.response.status<500){
+        if(err.response){
+            document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`
             return alert(err.response.data.error);
         }
-        document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`
     }
 }
 

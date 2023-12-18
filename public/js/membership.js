@@ -52,7 +52,8 @@ async function buyPremium(e){
                         }
                     }
                     catch(err){
-                        return alert(err.response.data.error);
+                        if(err.response) 
+                            return alert(err.response.data.error);
                     }
                 }
             }
@@ -66,12 +67,14 @@ async function buyPremium(e){
                     await axios.put(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/purchase/update-membership`,{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
                 }
                 catch(err){
-                    alert(err.response.data.error);
+                    if(err.response) 
+                        alert(err.response.data.error);
                 }
             });
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }

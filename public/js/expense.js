@@ -66,7 +66,8 @@ async function addExpense(e) {
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if (err.response)
+            alert(err.response.data.error);
     }    
 };
 
@@ -89,7 +90,7 @@ async function getExpenses(pageNo, rowsPerPage){
 
 async function deleteExpense(e,id){   
     try{
-        let itemSelect = e.target.parentElement;
+        // let itemSelect = e.target.parentElement;
         const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
         const response = await axios.delete(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/expense/delete-expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
@@ -99,7 +100,8 @@ async function deleteExpense(e,id){
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }
 
@@ -119,7 +121,8 @@ async function editExpense(e,id){
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }
 

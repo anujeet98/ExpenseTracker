@@ -26,7 +26,8 @@ async function postSignup(event){
             email: email.value,
             password: password.value
         };
-
+        console.log('hello');
+        console.log(`${process.env.BACKEND_HOST}`)
         const response = await axios.post(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/user/signup`, signupObj);
         if(response.status===201){
             alert('user created successfully.\nKindly login now..');
@@ -34,10 +35,10 @@ async function postSignup(event){
             window.location.href = "login.html";
         }
     }catch(err){
-        if(err.response.status===400){
+        if (err.response) {
+            document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`;
             return alert(err.response.data.error);
         }
-        document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`
     }
 }
 
