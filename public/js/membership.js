@@ -33,7 +33,7 @@ function membershipStatus() {
 async function buyPremium(e){
     try{
         const token = localStorage.getItem("token");
-        const response = await axios.get('http://localhost:9000/purchase/premium-membership', {headers: {"Authorization":token}});
+        const response = await axios.get('http://54.234.60.93:3000/purchase/premium-membership', {headers: {"Authorization":token}});
 
         if(response.status === 201){
 
@@ -42,7 +42,7 @@ async function buyPremium(e){
                 "order_id": response.data.order.id,
                 "handler": async function(response) {
                     try{
-                        const updateResponse = await axios.put('http://localhost:9000/purchase/update-membership',response ,{headers: {"Authorization":token}} );
+                        const updateResponse = await axios.put('http://54.234.60.93:3000/purchase/update-membership',response ,{headers: {"Authorization":token}} );
                         console.log(updateResponse);
                         if(updateResponse.status === 200){
                             //add ispremium token in LS
@@ -63,7 +63,7 @@ async function buyPremium(e){
 
             rzpPayment.on('payment.failed', async ()=>{
                 try{
-                    await axios.put('http://localhost:9000/purchase/update-membership',{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
+                    await axios.put('http://54.234.60.93:3000/purchase/update-membership',{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
                 }
                 catch(err){
                     alert(err.response.data.error);
