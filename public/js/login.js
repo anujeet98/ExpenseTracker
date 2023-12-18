@@ -7,7 +7,7 @@ const submitBtn = document.getElementById("submit");
 
 submitBtn.addEventListener('click', getLogin);
 
-
+const BACKEND_ADDRESS = '54.234.60.93:3000';
 //===================================================================================================
 
 
@@ -25,7 +25,7 @@ async function getLogin(event){
             password: password.value
         };
 
-        const response = await axios.post(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/user/login`, getLogin);
+        const response = await axios.post(`http://${BACKEND_ADDRESS}/user/login`, getLogin);
         if(response.status===201){
             localStorage.setItem("token",response.data.token);
             alert(response.data.message);

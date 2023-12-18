@@ -31,7 +31,7 @@ exports.forgetPassword = async(req, res, next) => {
                     <br>
                     <h3>Dear ${user.username},</h3><br>
                     <br>
-                    <p>Please use the following link to </p> <a href="${process.env.BACKEND_URL}password/resetpassword/${id}">reset</a> <p> your password.</p><br>
+                    <p>Please use the following link to </p> <a href="${process.env.BACKEND_ADDR}/password/resetpassword/${id}">reset</a> <p> your password.</p><br>
                     <br><br>
                     <h5>Thank You<h5><br>
                 `,

@@ -1,6 +1,7 @@
 const leaderboardContainer = document.getElementById("leaderboardContainer");
 const premiumFeatures = document.getElementById("premiumFeatures");
 
+
 viewPremiumFeatures = () => {
     showLeaderBoardBtn();
     showReportDownloadBtn();
@@ -12,7 +13,7 @@ function showLeaderBoardBtn () {
 
 async function getLeaderboard() {
     try{
-        const response = await axios.get(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/premium/leaderboard`, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/leaderboard`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 200){
             showLeaderBoard(response.data);
         }
@@ -41,7 +42,7 @@ function showReportDownloadBtn(){
 
 async function downloadReport(){
     try{
-        const response = await axios.get(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/premium/download/`, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/download/`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status===201){
             const a = document.createElement('a');
             a.href = response.data.reportURL;
