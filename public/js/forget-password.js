@@ -12,7 +12,7 @@ async function forgetPassword(e){
             return alert('kindly fill your email');
         }
     
-        const response = await axios.get(`http://localhost:9000/password/forgotpassword/${email.value}`);
+        const response = await axios.get(`http://54.234.60.93:3000/password/forgotpassword/${email.value}`);
         if(response.status === 200){
             alert(response.data.message);
         }
