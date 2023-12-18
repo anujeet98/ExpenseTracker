@@ -27,7 +27,7 @@ async function postSignup(event){
             password: password.value
         };
 
-        const response = await axios.post('http://54.234.60.93:3000/user/signup', signupObj);
+        const response = await axios.post(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/user/signup`, signupObj);
         if(response.status===201){
             alert('user created successfully.\nKindly login now..');
             clearUserForm();

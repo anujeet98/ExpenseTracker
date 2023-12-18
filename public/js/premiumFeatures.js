@@ -12,9 +12,8 @@ function showLeaderBoardBtn () {
 
 async function getLeaderboard() {
     try{
-        const response = await axios.get('http://54.234.60.93:3000/premium/leaderboard', {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.get(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/premium/leaderboard`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 200){
-            console.log(response)
             showLeaderBoard(response.data);
         }
     }
@@ -42,7 +41,7 @@ function showReportDownloadBtn(){
 
 async function downloadReport(){
     try{
-        const response = await axios.get('http://54.234.60.93:3000/premium/download/', {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.get(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/premium/download/`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status===201){
             const a = document.createElement('a');
             a.href = response.data.reportURL;

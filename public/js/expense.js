@@ -42,7 +42,7 @@ async function addExpense(e) {
             };
             if(editing===true){
                 //Edit Product
-                const response = await axios.put('http://54.234.60.93:3000/expense/update-expense/'+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await axios.put(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/expense/update-expense/`+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status === 201){
                     amount.value = '';
                     description.value = '';
@@ -54,7 +54,7 @@ async function addExpense(e) {
             }
             else{
                 //Add New Product
-                const response = await axios.post('http://54.234.60.93:3000/expense/add-expense', expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await axios.post(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/expense/add-expense`, expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status===201){
                     amount.value = '';
                     description.value = '';
@@ -75,7 +75,7 @@ async function getExpenses(pageNo, rowsPerPage){
     try{
         editing=false;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://54.234.60.93:3000/expense/get-expenses?page=${page}&rowsperpage=${rowsPerPage}`, {headers: {"Authorization":token}});
+        const response = await axios.get(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/get-expenses?page=${page}&rowsperpage=${rowsPerPage}`, {headers: {"Authorization":token}});
         if(response.status === 200){
             showExpenses(response.data.expenses);
             showPagination(response.data);
@@ -91,7 +91,7 @@ async function deleteExpense(e,id){
     try{
         let itemSelect = e.target.parentElement;
         const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
-        const response = await axios.delete("http://54.234.60.93:3000/expense/delete-expense/"+id, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.delete(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/expense/delete-expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
             // expensesContainer.removeChild(itemSelect);
             getExpenses(1, rowsPerPage);
@@ -107,7 +107,7 @@ async function editExpense(e,id){
     try{
         let itemSelect = e.target.parentElement;
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:3000/expense/get-expense/"+id, {headers: {"Authorization":token}});
+        const response = await axios.get(`http://${process.env.BACKEND_HOST}:${process.env.APP_PORT}/expense/get-expense/`+id, {headers: {"Authorization":token}});
         if(response.status===200){
             let obj = response.data;
             amount.value = obj.amount;
