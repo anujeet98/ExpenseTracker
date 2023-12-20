@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const premiumController = require('../contollers/premium-feature-controller');
+const premiumController = require('../controllers/premium-feature-controller');
 const authenticationMiddleware = require('../middleware/authentication');
 
 

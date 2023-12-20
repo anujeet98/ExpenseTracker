@@ -9,7 +9,7 @@ const amount = document.getElementById("amt");
 const description = document.getElementById("descr");
 const category = document.getElementById("cat");
 
-const BACKEND_ADDRESS = '34.234.58.48:3000';
+const BACKEND_ADDRESS = '34.224.166.102:3000';
 
 // EventListers
 form.addEventListener('submit',addExpense);
