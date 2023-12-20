@@ -3,7 +3,7 @@ const email = document.getElementById("email");
 const password = document.getElementById("password");
 const submitBtn = document.getElementById("submit");
 
-const BACKEND_ADDRESS = '34.234.58.48:3000';
+const BACKEND_ADDRESS = '34.224.166.102:3000';
 
 //=====================================================================================================
 
