@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const expenseController = require('../contollers/expense-controller');
+const expenseController = require('../controllers/expense-controller');
 const authenticationMiddleware = require('../middleware/authentication');
 
 
