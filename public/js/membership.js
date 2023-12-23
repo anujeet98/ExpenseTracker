@@ -1,8 +1,6 @@
-const premiumBtn = document.getElementById("premiumBtn");
 const premiumTag = document.getElementById("premiumTag");
+const headerTop = document.getElementById("header-top");
 
-
-premiumBtn.addEventListener('click', buyPremium);
 document.addEventListener('DOMContentLoaded', membershipStatus);
 
 function parseJwt (token) {
@@ -19,12 +17,18 @@ function membershipStatus() {
     const decoded = parseJwt(localStorage.getItem("token"));
     if(decoded.isPremium === true){
         premiumTag.style.visibility = 'visible';
-        premiumBtn.style.visibility = 'hidden';
         viewPremiumFeatures();
     }
     else{
         premiumTag.style.visibility = 'hidden';
-        premiumBtn.style.visibility = 'visible';
+
+        const buyBtn = document.createElement('button');
+        buyBtn.appendChild(document.createTextNode('Become Premium User'));
+        buyBtn.setAttribute("id", "premiumBtn");
+        buyBtn.onclick = ()=>{
+            buyPremium();
+        };
+        headerTop.appendChild(buyBtn);
     }
 };
 
@@ -46,6 +50,7 @@ async function buyPremium(e){
                         if(updateResponse.status === 200){
                             //add ispremium token in LS
                             localStorage.setItem("token",updateResponse.data.token);
+                            headerTop.removeChild(document.getElementById('premiumBtn'));
                             membershipStatus();
                             return alert('payment successful for premium membership');
                         }
