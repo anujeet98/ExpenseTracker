@@ -1,15 +1,14 @@
 const form = document.getElementById("ExpenseForm");
-const expensesContainer = document.getElementById("expensesContainer");
 const pageContainer = document.getElementById("pageContainer");
 const dynamicPage = document.getElementById("dynamicPage");
-
+const expenseTable = document.getElementById("expenseTable");
 
 // Expense details
 const amount = document.getElementById("amt");
 const description = document.getElementById("descr");
 const category = document.getElementById("cat");
 
-const BACKEND_ADDRESS = '3.91.158.198:3000';
+const BACKEND_ADDRESS = 'localhost:3000';
 
 // EventListers
 form.addEventListener('submit',addExpense);
@@ -95,7 +94,6 @@ async function deleteExpense(e,id){
         const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
         const response = await axios.delete(`http://${BACKEND_ADDRESS}/expense/delete-expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
-            // expensesContainer.removeChild(itemSelect);
             getExpenses(1, rowsPerPage);
             return alert('Expense deleted..!!');
         }
@@ -108,7 +106,7 @@ async function deleteExpense(e,id){
 
 async function editExpense(e,id){
     try{
-        let itemSelect = e.target.parentElement;
+        let itemSelect = e.target.parentElement.parentElement;
         const token = localStorage.getItem("token");
         const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/get-expense/`+id, {headers: {"Authorization":token}});
         if(response.status===200){
@@ -118,7 +116,8 @@ async function editExpense(e,id){
             category.value = obj.category;
             editing=true;
             editId=id;
-            expensesContainer.removeChild(itemSelect);
+            console.log(itemSelect)
+            expenseTable.removeChild(itemSelect);
         }
     }
     catch(err){
@@ -130,34 +129,46 @@ async function editExpense(e,id){
 
 
 function showExpenses(res){
-    expensesContainer.innerHTML = "";
+    expenseTable.innerHTML = "";
     for(let i=0; i< res.length; i++){
         let obj = res[i];
-        
 
-        let li = document.createElement('li');
-        li.className = "expense";
-        li.appendChild(document.createTextNode(obj.amount + " - " + obj.description + " - " + obj.category + "     "));
-        li.appendChild(document.createElement("span"))
+        const tr = document.createElement('tr');
+        tr.className="expense";
+
+        let tdAmount = document.createElement('td');
+        tdAmount.innerHTML = obj.amount;
+        tr.appendChild(tdAmount);
+
+        let tdDescription = document.createElement('td');
+        tdDescription.innerHTML = obj.description;
+        tr.appendChild(tdDescription);
+
+        let tdCategory = document.createElement('td');
+        tdCategory.innerHTML = obj.category;
+        tr.appendChild(tdCategory);
 
         // create delete button
         let delBtn = document.createElement("button");
         delBtn.className = "deleteExpense";
         delBtn.setAttribute("onclick",`deleteExpense(event,'${obj.id}')`);
         delBtn.appendChild(document.createTextNode("Delete Expense"));
-        li.appendChild(delBtn);
-        li.appendChild(document.createTextNode("  "));
+
+        let tdDeleteBtn = document.createElement('td');
+        tdDeleteBtn.appendChild(delBtn);
+        tr.appendChild(tdDeleteBtn);
 
         // create edit button
         let editBtn = document.createElement("button");
         editBtn.className = "editExpense";
         editBtn.setAttribute("onclick",`editExpense(event,'${obj.id}')`);
         editBtn.appendChild(document.createTextNode("Edit Expense"));
-        li.appendChild(editBtn);
+        let tdEditBtn = document.createElement('td');
+        tdEditBtn.appendChild(editBtn);
+        tr.appendChild(tdEditBtn);
 
-        // add new list item to expense UL
-        expensesContainer.appendChild(li);
-        // console.log(obj);
+        // add new item to expense table
+        expenseTable.appendChild(tr);
     }
 
     console.log('success');

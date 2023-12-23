@@ -1,8 +1,9 @@
 const leaderboardContainer = document.getElementById("leaderboardContainer");
+const leaderBoardTable = document.getElementById("leaderBoardTable");
 const premiumFeatures = document.getElementById("premiumFeatures");
+const leaderboardHeader = document.getElementById('leaderboardHeader');
 
-
-viewPremiumFeatures = () => {
+const viewPremiumFeatures = () => {
     showLeaderBoardBtn();
     showReportDownloadBtn();
 }
@@ -26,11 +27,41 @@ async function getLeaderboard() {
 }
 
 function showLeaderBoard(data){
-    leaderboardContainer.innerHTML = "";
-    leaderboardContainer.innerHTML += "<div><h1>Leaderboard:</h1></div><br>";
+
+    leaderboardContainer.innerHTML="";
+    leaderboardHeader.innerHTML="";
+
+    leaderboardHeader.innerHTML += "<h1>Leaderboard:</h1><br>";
+    const tr = document.createElement('tr');
+
+    const thUsername = document.createElement('th');
+    thUsername.innerText = 'Username';
+
+    const thExpense = document.createElement('th');
+    thExpense.innerText = 'Total Expense';
+
+    tr.appendChild(thUsername);
+    tr.appendChild(thExpense);
+    leaderBoardTable.appendChild(tr);
+
+
     data.forEach((element,i) => {
-        leaderboardContainer.innerHTML += `<div><p></p>${i+1}] Username: ${element.username}; Total Expense: ${element.total_expense}</div><br>`;
+        const trUser = document.createElement('tr');
+        trUser.className="user";
+
+        let tdUser = document.createElement('td');
+        tdUser.innerHTML = element.username;
+
+        let tdExpense = document.createElement('td');
+        tdExpense.innerHTML = element.total_expense;
+
+        trUser.appendChild(tdUser);
+        trUser.appendChild(tdExpense);
+        leaderBoardTable.appendChild(trUser);
     });
+
+    leaderboardContainer.appendChild(leaderBoardTable);
+
 }
 
 
@@ -55,5 +86,3 @@ async function downloadReport(){
             alert(err.response.data.error);
     }
 }
-
-// {status: 201, data: {reportURL: "https://drive.google.com/file/d/1ahCPosLSELYrQFLpWzHoIZS4pPMu2e13/view?usp=drive_link"}};//
