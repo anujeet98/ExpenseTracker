@@ -28,7 +28,7 @@ async function getLeaderboard() {
 
 function showLeaderBoard(data){
 
-    leaderboardContainer.innerHTML="";
+    leaderBoardTable.innerHTML="";
     leaderboardHeader.innerHTML="";
 
     leaderboardHeader.innerHTML += "<h1>Leaderboard:</h1><br>";
@@ -60,7 +60,6 @@ function showLeaderBoard(data){
         leaderBoardTable.appendChild(trUser);
     });
 
-    leaderboardContainer.appendChild(leaderBoardTable);
 
 }
 
