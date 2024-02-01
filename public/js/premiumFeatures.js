@@ -9,7 +9,7 @@ const viewPremiumFeatures = () => {
 }
 
 function showLeaderBoardBtn () {
-    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard()" style="margin: 1% 1%;">Leaderboard</button>`;
+    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard()" style="margin: 1% 1%">Leaderboard</button>`;
 }
 
 async function getLeaderboard() {
@@ -67,7 +67,7 @@ function showLeaderBoard(data){
 //-------------------------------------------------------------------------------------------------------------------
 
 function showReportDownloadBtn(){
-    premiumFeatures.innerHTML += `<button id="reportDownloadBtn" onclick="downloadReport()" style="margin: 1% 1%;">Download Report</button>`;
+    premiumFeatures.innerHTML += `<button id="reportDownloadBtn" onclick="downloadReport()" style="margin: 1% 1%">Download Report</button>`;
 }
 
 async function downloadReport(){

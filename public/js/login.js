@@ -11,7 +11,7 @@ const submitBtn = document.getElementById("submit");
 
 submitBtn.addEventListener('click', getLogin);
 
-const BACKEND_ADDRESS = '54.147.138.102:3000';
+const BACKEND_ADDRESS = 'localhost:3000';
 //===================================================================================================
 
 

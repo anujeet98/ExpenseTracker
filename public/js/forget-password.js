@@ -3,7 +3,7 @@ const email = document.getElementById("email");
 forgetPasswordForm.addEventListener('submit',forgetPassword);
     
 // document.addEventListener('DOMContentLoaded', (e)=>{});
-const BACKEND_ADDRESS = '54.147.138.102:3000';
+const BACKEND_ADDRESS = 'localhost:3000';
 
 async function forgetPassword(e){
     try{
