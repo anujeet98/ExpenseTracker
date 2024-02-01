@@ -10,14 +10,13 @@ const mongoose = require('mongoose');
 // const https = require('https');
 // const compression = require('compression');
 
-// const User = require('./models/user-model');
 // const Order = require('./models/order-model');
 // const Expense = require('./models/expense-model');
 // const ForgetPassword = require('./models/forget-password');
 // const Download = require('./models/download-model');
 
 // const expenseRoutes = require('./routes/expense-route');
-// const userRoutes = require('./routes/user-route');
+const userRoutes = require('./routes/user-route');
 // const purchaseRoutes = require('./routes/purchase-route');
 // const premiumRoutes = require('./routes/premium-route');
 // const passwordRoutes = require('./routes/password-route');
@@ -41,15 +40,15 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 //--------------------------------------------------------------
 
-// app.use('/user', userRoutes);
+app.use('/user', userRoutes);
 // app.use('/expense', expenseRoutes);
 // app.use('/purchase', purchaseRoutes);
 // app.use('/premium', premiumRoutes);
 // app.use('/password', passwordRoutes);
 
-// app.use((req,res) => {
-//     res.sendFile(path.join(__dirname, `/views/${req.url}`));
-// })
+app.use((req,res) => {
+    res.sendFile(path.join(__dirname, `/views/${req.url}`));
+})
 
 
 //-------------------------------------------------------------

@@ -4,31 +4,25 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user-model');
 
 const inputValidator = require('../util/input-validator');
-const sequelize = require('../util/db');
 
 module.exports.signup = async(req,res,next) => {
-    let trans;
     try{
-        trans = await sequelize.transaction();
         const {username, email, password} = req.body;
         if(inputValidator.text(username) || inputValidator.text(email) || inputValidator.text(password)){
             return res.status(400).json({error: "bad input parameters"});
         }
-        const existingUser = await User.findOne({where: {email: email}});
-        if(existingUser !== null){
-            //user exists
+        const existingUser = await User.findOne({email: email});
+        if(existingUser){
             return res.status(400).json({error: "Email already exists.\nKindly login with your credentials"});
         }
 
         //else, user doesn't exists -> Encrypt password -> create new record
         const hash = await bcrypt.hash(password, 10);
-        await User.create({username: username, email:email, password:hash}, {transaction: trans});
+        const newUser = new User({username: username, email:email, password:hash});
+        await newUser.save();
 
-        await trans.commit();
         return res.status(201).json({message: "success"});
     }catch(err){
-        if(trans)
-            trans.rollback();
         console.log("SignupError- ",err);
         res.status(500).json({error: 'Internal server error while signup'});
     }
@@ -40,8 +34,8 @@ module.exports.login = async(req,res,next) => {
         if(inputValidator.text(email) || inputValidator.text(password)){
             return res.status(400).json({error: "bad input parameters"});
         }
-        const existingUser = await User.findOne({where: {email: email}});
-        if(existingUser!==null){
+        const existingUser = await User.findOne({email: email});
+        if(existingUser){
             //user email exists => verify password
             const passwordMatch = await bcrypt.compare(password, existingUser.password);
             if(passwordMatch){
