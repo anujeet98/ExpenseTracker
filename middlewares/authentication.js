@@ -5,8 +5,8 @@ module.exports.auth = async(req,res,next) => {
     try{
         const token = req.headers.authorization;
         const verifiedToken = jwt.verify(token, process.env.AUTH_KEY);
-        const verifiedUser = await User.findByPk(verifiedToken.userId);
-        if(verifiedUser!=null){
+        const verifiedUser = await User.findById(verifiedToken.userId);
+        if(verifiedUser){
             req.user = verifiedUser;
             next();
         }
@@ -16,7 +16,6 @@ module.exports.auth = async(req,res,next) => {
     }
     catch(err){
         if(err.name === 'JsonWebTokenError'){
-            console.error('JsonWebTokenError-auth: ',err);   
             return res.status(401).json({ error: 'Unauthorized - Invalid token' });
         }
         console.error('InternalServerError-auth: ',err);   

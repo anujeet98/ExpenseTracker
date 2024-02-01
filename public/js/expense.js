@@ -42,7 +42,7 @@ async function addExpense(e) {
             };
             if(editing===true){
                 //Edit Product
-                const response = await axios.put(`http://${BACKEND_ADDRESS}/expense/update-expense/`+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await axios.put(`http://${BACKEND_ADDRESS}/expense/`+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status === 201){
                     amount.value = '';
                     description.value = '';
@@ -54,7 +54,7 @@ async function addExpense(e) {
             }
             else{
                 //Add New Product
-                const response = await axios.post(`http://${BACKEND_ADDRESS}/expense/add-expense`, expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await axios.post(`http://${BACKEND_ADDRESS}/expense/`, expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status===201){
                     amount.value = '';
                     description.value = '';
@@ -76,7 +76,7 @@ async function getExpenses(pageNo, rowsPerPage){
     try{
         editing=false;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/get-expenses?page=${page}&rowsperpage=${rowsPerPage}`, {headers: {"Authorization":token}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/?page=${page}&rowsperpage=${rowsPerPage}`, {headers: {"Authorization":token}});
         if(response.status === 200){
             showExpenses(response.data.expenses);
             showPagination(response.data);
@@ -92,7 +92,7 @@ async function deleteExpense(e,id){
     try{
         // let itemSelect = e.target.parentElement;
         const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
-        const response = await axios.delete(`http://${BACKEND_ADDRESS}/expense/delete-expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.delete(`http://${BACKEND_ADDRESS}/expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
             getExpenses(1, rowsPerPage);
             return alert('Expense deleted..!!');
@@ -108,15 +108,14 @@ async function editExpense(e,id){
     try{
         let itemSelect = e.target.parentElement.parentElement;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/get-expense/`+id, {headers: {"Authorization":token}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/`+id, {headers: {"Authorization":token}});
         if(response.status===200){
-            let obj = response.data;
+            let obj = response.data[0];
             amount.value = obj.amount;
             description.value = obj.description;
             category.value = obj.category;
             editing=true;
             editId=id;
-            console.log(itemSelect)
             expenseTable.removeChild(itemSelect);
         }
     }
@@ -151,7 +150,7 @@ function showExpenses(res){
         // create delete button
         let delBtn = document.createElement("button");
         delBtn.className = "deleteExpense";
-        delBtn.setAttribute("onclick",`deleteExpense(event,'${obj.id}')`);
+        delBtn.setAttribute("onclick",`deleteExpense(event,'${obj._id}')`);
         delBtn.appendChild(document.createTextNode("Delete Expense"));
 
         let tdDeleteBtn = document.createElement('td');
@@ -161,7 +160,7 @@ function showExpenses(res){
         // create edit button
         let editBtn = document.createElement("button");
         editBtn.className = "editExpense";
-        editBtn.setAttribute("onclick",`editExpense(event,'${obj.id}')`);
+        editBtn.setAttribute("onclick",`editExpense(event,'${obj._id}')`);
         editBtn.appendChild(document.createTextNode("Edit Expense"));
         let tdEditBtn = document.createElement('td');
         tdEditBtn.appendChild(editBtn);

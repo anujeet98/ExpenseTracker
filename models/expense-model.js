@@ -1,53 +1,25 @@
-const { Sequelize } = require('sequelize');
-const sequelize = require('../util/db');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-module.exports = sequelize.define('expense',{
-    id:{
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true
-    },
+const ExpenseSchema = new Schema({
     amount: {
-        type: Sequelize.DOUBLE,
-        allowNull: false
+        type: Number,
+        required: true
     },
-    description:{
-        type: Sequelize.STRING,
-        allowNull: false
+    description: {
+        type: String,
+        required: true
     },
     category: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
+        type: String,
+        required: true
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 });
 
 
-// module.exports = class Expenses{
-//     constructor(amount, description, category, user_id){
-//         this.amount=amount;
-//         this.description =description;
-//         this.category=category;
-//         this.user_id=user_id;
-//     };
-
-//     save(){
-//         return db.execute('INSERT INTO expenses(amount,description,category,user_id) VALUES(?,?,?,?)', [this.amount,this.description,this.category,this.user_id]);
-//     }
-
-//     update(id){
-//         return db.execute('UPDATE expenses set amount=?, description=?, category=? WHERE id=?', [this.amount,this.description,this.category,id]);
-//     }
-
-//     static fetchAll(userId){
-//         return db.execute('SELECT id, amount, description, category FROM expenses WHERE user_id=?',[userId]);
-//     }
-
-//     static deleteExpense(expenseId, userId){
-//         return db.execute('DELETE FROM expenses WHERE id=? and user_id=?',[expenseId, userId]);
-//     }
-
-//     static fetchById(id, userId){
-//         return db.execute('SELECT id, amount, description, category FROM expenses WHERE id=? and user_id=?',[id, userId]);
-//     }
-// }
+module.exports = mongoose.model('Expense', ExpenseSchema);

@@ -17,12 +17,8 @@ exports.getExpenses = async(req,res,next) => {
         //+process.env.EXPENSE_PER_PAGE;
 
         const [totalExpenseCount, expenses] = await Promise.all([
-            Expense.count({where:{userId: user.id}}),
-            Expense.findAll({
-                offset: (page-1)*ITEMS_PER_PAGE,
-                limit: ITEMS_PER_PAGE,
-                where: {userId: user.id}
-            })
+            Expense.countDocuments({userId: user.id}),
+            Expense.find({userId: user.id}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
         ]);
         const resJSON = {
             expenses: expenses,
@@ -42,7 +38,6 @@ exports.getExpenses = async(req,res,next) => {
 };
 
 exports.addExpense = async(req,res,next) => {
-    let tran;
     try{
         tran = await sequelize.transaction();
         const {amount, description, category} = req.body;
@@ -51,50 +46,60 @@ exports.addExpense = async(req,res,next) => {
             return res.status(400).json({ error: 'bad input parameters' });
         }
 
-        const user = req.user;
+        const newExpense = new Expense({
+            amount: amount,
+            description: description,
+            category: category,
+            userId: req.user._id
+        });
+
+        req.user.total_expense += +amount;
+
         const [expenseRes, userRes] = await Promise.all([
-            user.createExpense({ amount, description, category }, { transaction: tran }),
-            user.update({ total_expense: user.total_expense + +amount }, { transaction: tran })
-          ]);
+            newExpense.save(),
+            req.user.save()
+        ]);
         
-          const resJSON = {
+        const resJSON = {
             "newExpenseDetail" : {
                 "id" : expenseRes.id, ...req.body
             }
         }
-        await tran.commit();
         return res.status(201).json(resJSON);
     }
     catch(err){
-        if(tran)
-            await tran.rollback();
-        console.error('WriteError-postExpense: ',err);
+        console.error('WriteError-addExpense: ',err);
         return res.status(500).json({ error: 'Internal Server Error while adding expense' });
     }
 };
 
 exports.deleteExpense = async (req,res,next) => {
-    let tran;
+    // let tran;
     try{
-        tran = await sequelize.transaction();
+        // tran = await sequelize.transaction();
         const expenseId = req.params.id;
         const user = req.user;
-        const oldExpenseAmount = await user.getExpenses({where: {id: expenseId}, attributes: ['amount']});
-        const newTotalExpense = -oldExpenseAmount[0].dataValues.amount + +user.total_expense;
+
+        const oldExpense = await Expense.findOne({_id: expenseId});
+        const newTotalExpense = -oldExpense.amount + +user.total_expense;
+
+        user.total_expense = +newTotalExpense;
 
         const[expenseRes, userRes] = await Promise.all([
-            Expense.destroy({where: {id: expenseId, userId: user.id}}, {transaction: tran}),
-            user.update({total_expense: newTotalExpense}, {transaction: tran})
+            oldExpense.deleteOne({_id: expenseId, userId: user.id}),
+            user.save()
         ]);
+        console.log(expenseRes, userRes);
+        return res.status(204).json({status: "success"});
 
-        if(expenseRes === 1){
-            await tran.commit();
-            return res.status(204).json({status: "success"});
-        }
-        else{
-            await tran.rollback();
-            res.status(404).json({ error: 'Resource not found' });
-        }
+        // if(expenseRes === 1){
+        //     // await tran.commit();
+        //     return res.status(204).json({status: "success"});
+        // }
+        // else{
+        //     // await tran.rollback();
+        //     res.status(404).json({ error: 'Resource not found' });
+        // }
     }catch(err){
         if(tran)
             await tran.rollback();
@@ -106,8 +111,8 @@ exports.deleteExpense = async (req,res,next) => {
 exports.getExpense = async(req,res,next) => {
     try{
         const expenseId = req.params.id;
-        const result = await Expense.findOne({where: {id: expenseId, userId: req.user.id}});
-        if(result!==null)
+        const result = await Expense.find({_id: expenseId});
+        if(result)
             res.status(200).json(result);
         else
             res.status(404).json({ error: 'Resource not found' });
@@ -119,9 +124,9 @@ exports.getExpense = async(req,res,next) => {
 };
 
 exports.updateExpense = async(req,res,next) => {
-    let tran;
+    // let tran;
     try{
-        tran = await sequelize.transaction();
+        // tran = await sequelize.transaction();
 
         const {amount, description, category} = req.body;
         const user = req.user;
@@ -131,35 +136,29 @@ exports.updateExpense = async(req,res,next) => {
             return res.status(400).json({ error: 'bad input parameters' });
         }
 
-        const oldExpenseAmount = await user.getExpenses({where: {id: expenseId}, attributes: ['amount']});
-        const newTotalExpense = +user.total_expense + -oldExpenseAmount[0].dataValues.amount + +amount;
+        const oldExpense = await Expense.findOne({_id: expenseId});
+        const newTotalExpense = +user.total_expense + -oldExpense.amount + +amount;
+
+        oldExpense.amount = amount;
+        oldExpense.description = description;
+        oldExpense.category = category;
+
+        user.total_expense = +newTotalExpense;
 
         const [expenseRes, userRes] = await Promise.all([
-            Expense.update(
-                {amount: amount, description:description, category:category},
-                {where: {id:expenseId, userId:user.id}},
-                {transaction: tran}
-            ),
-            user.update({total_expense: newTotalExpense}, {transaction: tran})
+            oldExpense.save(),  //save the updated values
+            user.save()
         ]);
-
-        if(expenseRes[0] === 1){
-            let resJSON = {
-                "updatedExpenseDetail" : {
-                    "id" : req.params.id, ...req.body
-                }
+        let resJSON = {
+            "updatedExpenseDetail" : {
+                "id" : req.params.id, ...req.body
             }
-            await tran.commit();
-            res.status(201).json(resJSON);
         }
-        else{
-            await tran.rollback();
-            res.status(404).json({ error: 'Resource not found' });
-        }
+        res.status(201).json({message: "success"});
     }
     catch(err){
-        if(tran)
-            await tran.rollback();
+        // if(tran)
+        //     await tran.rollback();
         console.error('updateError-putExpense',err);
         return res.status(500).json({ error: 'Internal Server Error while updating expense' });
     }
