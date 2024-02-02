@@ -61,7 +61,6 @@ app.use((req,res) => {
 const serverInit = async function (){
     try{
         const con = await mongoose.connect(`${process.env.MONGODB_CONN_STR}`);
-        // console.log(con);
         app.listen(process.env.APP_PORT || 3000);
         console.log(`Server is running on PORT: ${process.env.APP_PORT}`);
     }

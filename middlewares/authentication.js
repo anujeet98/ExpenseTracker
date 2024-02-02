@@ -11,14 +11,17 @@ module.exports.auth = async(req,res,next) => {
             next();
         }
         else{
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found. \nPlease sign in again' });
         }
     }
     catch(err){
         if(err.name === 'JsonWebTokenError'){
             return res.status(401).json({ error: 'Unauthorized - Invalid token' });
         }
-        console.error('InternalServerError-auth: ',err);   
+        if(err.name === 'TokenExpiredError')
+            return res.status(401).json({error: 'Token expired', message: 'Authentication token expired. \nPlease sign in again'});
+
+        console.error('auth error: ',err);   
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 }

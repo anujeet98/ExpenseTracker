@@ -8,9 +8,11 @@ const inputValidator = require('../util/input-validator');
 module.exports.signup = async(req,res,next) => {
     try{
         const {username, email, password} = req.body;
-        if(inputValidator.text(username) || inputValidator.text(email) || inputValidator.text(password)){
-            return res.status(400).json({error: "bad input parameters"});
-        }
+        if(inputValidator.text(username) || inputValidator.text(email) || inputValidator.text(password))
+            return res.status(422).json({error: "bad input parameters"});
+        if(inputValidator.email(email))
+            return res.status(422).json({error: "bad input parameters", message: "Invalid email received"});
+
         const existingUser = await User.findOne({email: email});
         if(existingUser){
             return res.status(400).json({error: "Email already exists.\nKindly login with your credentials"});
@@ -21,28 +23,30 @@ module.exports.signup = async(req,res,next) => {
         const newUser = new User({username: username, email:email, password:hash});
         await newUser.save();
 
-        return res.status(201).json({message: "success"});
+        return res.status(201).json({message: "User account created. \nPlease sign-in to continue"});
     }catch(err){
-        console.log("SignupError- ",err);
+        console.log("signup error: ",err);
         res.status(500).json({error: 'Internal server error while signup'});
     }
 }
 
-module.exports.login = async(req,res,next) => {
+module.exports.signin = async(req,res,next) => {
     try{
         const {email, password} = req.body;
-        if(inputValidator.text(email) || inputValidator.text(password)){
-            return res.status(400).json({error: "bad input parameters"});
+        if(inputValidator.email(email) || inputValidator.text(password)){
+            return res.status(422).json({error: "bad input parameters"});
         }
         const existingUser = await User.findOne({email: email});
         if(existingUser){
             //user email exists => verify password
             const passwordMatch = await bcrypt.compare(password, existingUser.password);
             if(passwordMatch){
-                return res.status(201).json({message: "User login successful", status: "success", token: jwt.sign({userId: existingUser.id, isPremium: existingUser.is_premium}, process.env.AUTH_KEY) });
+                const expirationTimeInSeconds = 3600;
+                const tokenExpiry = Math.floor(Date.now() / 1000) + expirationTimeInSeconds;
+                return res.status(201).json({message: "User login successful", status: "success", token: jwt.sign({userId: existingUser.id, isPremium: existingUser.is_premium, exp: tokenExpiry}, process.env.AUTH_KEY) });
             }
             else{
-                return res.status(401).json({error: "Incorrect user password.\nUser not authenticated."});
+                return res.status(401).json({error: "Incorrect user password."});
             }
         }
         else{
@@ -51,7 +55,7 @@ module.exports.login = async(req,res,next) => {
         }
     }
     catch(err){
-        console.log('LoginError- ',err);
-        res.status(500).json({error: 'Internal server error while login'});
+        console.log('signin error: ',err);
+        res.status(500).json({error: 'Internal server error while signin'});
     }
 }

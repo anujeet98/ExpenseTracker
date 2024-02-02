@@ -32,7 +32,7 @@ async function postSignup(event){
         if(response.status===201){
             alert('user created successfully.\nKindly login now..');
             clearUserForm();
-            window.location.href = "login.html";
+            window.location.href = "signin.html";
         }
     }catch(err){
         if (err.response) {

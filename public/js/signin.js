@@ -30,7 +30,7 @@ async function getLogin(event){
             password: password.value
         };
 
-        const response = await axios.post(`http://${BACKEND_ADDRESS}/user/login`, getLogin);
+        const response = await axios.post(`http://${BACKEND_ADDRESS}/user/signin`, getLogin);
         if(response.status===201){
             localStorage.setItem("token",response.data.token);
             // pushAlert(response.data.message, 'message');
