@@ -5,7 +5,7 @@ const mailjet = require('node-mailjet').Client.apiConnect(
 const uuid = require('uuid');
 const bcrypt = require('bcrypt');
 
-const User = require('../models/user-model');
+const User = require('../models/user');
 const ForgetPassword = require('../models/password');
 const inputValidator = require('../util/input-validator');
 

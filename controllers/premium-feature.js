@@ -1,10 +1,11 @@
-const User = require('../models/user-model');
+const User = require('../models/user');
+const Expense = require('../models/expense');
+const Download = require('../models/download');
 const AwsS3Service = require('../services/aws-s3-service')
-const db = require('../util/db');
 
 exports.getLeaderBoard = async(req,res,next) => {
     try{
-        const result = await User.findAll({attributes: ['username', 'total_expense'], order: [['total_expense', 'DESC']]});
+        const result = await User.find().select('username total_expense').sort({total_expense: -1});
         res.status(200).json(result);
     }
     catch(err){
@@ -16,13 +17,14 @@ exports.getLeaderBoard = async(req,res,next) => {
 exports.getReport = async(req, res, next) => {
     try{
         const user = req.user;
-        const expenses = await user.getExpenses();
+        const expenses = await Expense.find({userId: user._id});
 
-        const filename = `expense_${user.id}_${new Date()}.csv`;
+        const filename = `expense_${user._id}_${new Date()}.csv`;
         const data = JSON.stringify(expenses);
         const file_url = await AwsS3Service.uploadToS3(filename, data);
 
-        await user.createDownload({download_url: file_url});
+        const newDownload = new Download({download_url: file_url, userId: user._id});
+        await newDownload.save();
         res.status(201).json({status:"success", reportURL: file_url});
     }
     catch(err){

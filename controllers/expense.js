@@ -1,6 +1,6 @@
 const sequelize= require('../util/db');
-const Expense = require('../models/expense-model');
-const User = require('../models/user-model');
+const Expense = require('../models/expense');
+const User = require('../models/user');
 
 const inputValidator = require('../util/input-validator');
 
@@ -90,16 +90,15 @@ exports.deleteExpense = async (req,res,next) => {
             user.save()
         ]);
         console.log(expenseRes, userRes);
-        return res.status(204).json({status: "success"});
 
-        // if(expenseRes === 1){
-        //     // await tran.commit();
-        //     return res.status(204).json({status: "success"});
-        // }
-        // else{
-        //     // await tran.rollback();
-        //     res.status(404).json({ error: 'Resource not found' });
-        // }
+        if(expenseRes.deletedCount === 1){
+            // await tran.commit();
+            return res.status(204).json({status: "success"});
+        }
+        else{
+            // await tran.rollback();
+            res.status(404).json({ error: 'Resource not found' });
+        }
     }catch(err){
         if(tran)
             await tran.rollback();
@@ -154,6 +153,7 @@ exports.updateExpense = async(req,res,next) => {
                 "id" : req.params.id, ...req.body
             }
         }
+
         res.status(201).json({message: "success"});
     }
     catch(err){
