@@ -1,0 +1,33 @@
+
+
+.inner{
+    height: 90vh;
+}
+
+.header{
+    height: 6vh;
+}
+
+.navigation{
+    height: 5vh;
+}
+
+.content{
+    height: 79vh;
+}
+
+/* .left,
+.right{
+    height: 100%;
+} */
+
+#expenseTable{
+    
+}
+
+td {
+    max-width: 15ch; /* Adjust the number of characters as needed */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; /* Adds ellipsis (...) for hidden text */
+}

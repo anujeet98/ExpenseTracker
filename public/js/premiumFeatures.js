@@ -6,10 +6,11 @@ const leaderboardHeader = document.getElementById('leaderboardHeader');
 const viewPremiumFeatures = () => {
     showLeaderBoardBtn();
     showReportDownloadBtn();
+    showChartsBtn();
 }
 
 function showLeaderBoardBtn () {
-    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard()" style="margin: 1% 1%">Leaderboard</button>`;
+    premiumFeatures.innerHTML += `<li class="nav-item"><a class="nav-link" id="leaderboardBtn" href="#" onclick="getLeaderboard()">Leaderboard</a></li>`;
 }
 
 async function getLeaderboard() {
@@ -67,7 +68,7 @@ function showLeaderBoard(data){
 //-------------------------------------------------------------------------------------------------------------------
 
 function showReportDownloadBtn(){
-    premiumFeatures.innerHTML += `<button id="reportDownloadBtn" onclick="downloadReport()" style="margin: 1% 1%">Download Report</button>`;
+    premiumFeatures.innerHTML += `<li class="nav-item"><a class="nav-link" id="reportDownloadBtn" href="#" onclick="downloadReport()">Download Report</a></li>`;
 }
 
 async function downloadReport(){
@@ -84,4 +85,10 @@ async function downloadReport(){
         if(err.response) 
             alert(err.response.data.error);
     }
+}
+
+
+// -----------------------------------------------------------------------------------------------------------------
+function showChartsBtn(){
+    premiumFeatures.innerHTML += `<li class="nav-item"><a class="nav-link" id="chartsBtn" href="#" onclick="charts()">Charts</a></li>`;
 }

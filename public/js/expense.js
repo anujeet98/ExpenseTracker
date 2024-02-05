@@ -1,7 +1,7 @@
 const form = document.getElementById("ExpenseForm");
 const pageContainer = document.getElementById("pageContainer");
 const dynamicPage = document.getElementById("dynamicPage");
-const expenseTable = document.getElementById("expenseTable");
+const expenseTable = document.getElementById("expense-tbody");
 
 // Expense details
 const amount = document.getElementById("amt");
@@ -110,7 +110,7 @@ async function editExpense(e,id){
         const token = localStorage.getItem("token");
         const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/`+id, {headers: {"Authorization":token}});
         if(response.status===200){
-            let obj = response.data[0];
+            let obj = response.data;
             amount.value = obj.amount;
             description.value = obj.description;
             category.value = obj.category;
@@ -149,9 +149,9 @@ function showExpenses(res){
 
         // create delete button
         let delBtn = document.createElement("button");
-        delBtn.className = "deleteExpense";
+        delBtn.className = "deleteExpense btn btn-sm btn-danger w-75 ";
         delBtn.setAttribute("onclick",`deleteExpense(event,'${obj._id}')`);
-        delBtn.appendChild(document.createTextNode("Delete Expense"));
+        delBtn.appendChild(document.createTextNode("Delete"));
 
         let tdDeleteBtn = document.createElement('td');
         tdDeleteBtn.appendChild(delBtn);
@@ -159,9 +159,9 @@ function showExpenses(res){
 
         // create edit button
         let editBtn = document.createElement("button");
-        editBtn.className = "editExpense";
+        editBtn.className = "editExpense btn btn-sm btn-warning w-75 ";
         editBtn.setAttribute("onclick",`editExpense(event,'${obj._id}')`);
-        editBtn.appendChild(document.createTextNode("Edit Expense"));
+        editBtn.appendChild(document.createTextNode("Edit"));
         let tdEditBtn = document.createElement('td');
         tdEditBtn.appendChild(editBtn);
         tr.appendChild(tdEditBtn);
@@ -190,7 +190,9 @@ function createPageButton(pageNo, isCurrentPage){
     pageButton.onclick = () => {
         getExpenses(pageNo,rowsPerPage); 
     }
-    pageButton.className = "pageBtn";
+    pageButton.className = "pageBtn btn-sm fs-6 m-1 ";
+    if(isCurrentPage)
+        pageButton.classList.add('bg-dark-subtle');
     pageButton.appendChild(document.createTextNode(pageNo));
 
     pageContainer.appendChild(pageButton);

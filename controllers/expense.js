@@ -53,6 +53,7 @@ exports.addExpense = async(req,res,next) => {
         });
 
         req.user.total_expense += +amount;
+        let resJSON;
 
         const session = await mongoose.startSession();
         session.startTransaction(); 
@@ -61,6 +62,12 @@ exports.addExpense = async(req,res,next) => {
                 newExpense.save({session}),
                 req.user.save({session})
             ]);
+
+            resJSON = {
+                "newExpenseDetail" : {
+                    "id" : expenseRes.id, ...req.body
+                }
+            }
 
             await session.commitTransaction(); 
         }
@@ -72,11 +79,6 @@ exports.addExpense = async(req,res,next) => {
             await session.endSession();
         }
         
-        const resJSON = {
-            "newExpenseDetail" : {
-                "id" : expenseRes.id, ...req.body
-            }
-        }
         return res.status(201).json(resJSON);
     }
     catch(err){
@@ -160,7 +162,7 @@ exports.updateExpense = async(req,res,next) => {
         const session = await mongoose.startSession();
         session.startTransaction();
         try{
-            const [expenseRes, userRes] = await Promise.all([
+            const [expenseRes, userRes] = await Promise.allSettled([
                 oldExpense.save({session}),  //save the updated values
                 user.save({session})
             ]);
@@ -174,11 +176,11 @@ exports.updateExpense = async(req,res,next) => {
         finally{
             session.endSession();
         }
-        let resJSON = {
-            "updatedExpenseDetail" : {
-                "id" : req.params.id, ...req.body
-            }
-        }
+        // let resJSON = {
+        //     "updatedExpenseDetail" : {
+        //         "id" : req.params.id, ...req.body
+        //     }
+        // }
 
         res.status(201).json({message: "success"});
     }
