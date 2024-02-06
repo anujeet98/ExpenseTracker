@@ -64,7 +64,27 @@ module.exports.signin = async(req,res,next) => {
 
 exports.getUserInfo = async(req, res, next) => {
     try{
-        res.status(200).json({username: req.user.username, email: req.user.email});
+        let timelinecode = req.query.timelinecode;
+        if(!timelinecode)
+            return res.status(200).json({username: req.user.username, email: req.user.email});
+
+        let total_expense = 0;
+        const currentDate = new Date();
+        const firstDateOfMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1, 0, 0, 0, 0));
+        const firstDateOfYear = new Date(Date.UTC(currentDate.getFullYear(), 0, 1, 0, 0, 0, 0));
+
+        if(timelinecode == 0)
+            total_expense = req.user.total_expense;
+        else if(timelinecode==1){
+            const yearExpense = await Expense.find({userId: req.user._id, date: {$gt: firstDateOfYear}}).select('amount -_id').lean();
+            total_expense = yearExpense.reduce((sum, expense)=> sum+expense.amount,0);
+        }
+            
+        else if(timelinecode == 2){
+            const monthExpense = await Expense.find({userId: req.user._id, date: {$gt: firstDateOfMonth}}).select('amount -_id').lean();
+            total_expense = monthExpense.reduce((sum, expense)=> sum+expense.amount,0);
+        }
+        res.status(200).json({username: req.user.username, email: req.user.email, filtered_expense: total_expense});
     }
     catch(err){
         console.log('getUserInfo error: ',err);

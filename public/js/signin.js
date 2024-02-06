@@ -36,7 +36,7 @@ async function getLogin(event){
             // pushAlert(response.data.message, 'message');
             alert(response.data.message);
             clearUserForm();
-            window.location.href = "expense.html";
+            window.location.href = "ex.html";
         }
     }catch(err){
         if(err.response){

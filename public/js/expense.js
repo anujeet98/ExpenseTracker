@@ -12,7 +12,21 @@ let editing=false;
 let editId;
 
 const BACKEND_ADDRESS = 'localhost:3000';
+const api = axios.create({
+    baseURL: `http://${BACKEND_ADDRESS}`,
+});
 
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response.status === 401) {
+            console.log('Token expired or unauthorized. Redirecting to login.');
+            localStorage.removeItem('token');
+            window.location.href = '/signin.html';
+        }
+        return Promise.reject(error);
+    }
+);
 //-----------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', ()=>{
     updateProfileName();
@@ -52,7 +66,7 @@ async function addExpense(e) {
             };
             if(editing===true){
                 //Edit Product
-                const response = await axios.put(`http://${BACKEND_ADDRESS}/expense/`+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await api.put(`/expense/`+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status === 201){
                     amount.value = '';
                     description.value = '';
@@ -63,7 +77,7 @@ async function addExpense(e) {
             }
             else{
                 //Add New Product
-                const response = await axios.post(`http://${BACKEND_ADDRESS}/expense/`, expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await api.post(`/expense/`, expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status===201){
                     amount.value = '';
                     description.value = '';
@@ -85,7 +99,7 @@ async function getExpenses(pageNo, rowsPerPage){
         editing=false;
         const selectedDate = document.getElementById('date-picker').value;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/?page=${page}&rowsperpage=${rowsPerPage}&date=${selectedDate}`, {headers: {"Authorization":token}});
+        const response = await api.get(`/expense/?page=${page}&rowsperpage=${rowsPerPage}&date=${selectedDate}`, {headers: {"Authorization":token}});
         if(response.status === 200){
             showExpenses(response.data.expenses);
             showPagination(response.data, pageContainerExpense);
@@ -101,7 +115,7 @@ async function deleteExpense(e,id){
     try{
         // let itemSelect = e.target.parentElement;
         const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
-        const response = await axios.delete(`http://${BACKEND_ADDRESS}/expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await api.delete(`/expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
             getExpenses(1, rowsPerPage);
             return alert('Expense deleted..!!');
@@ -117,7 +131,7 @@ async function editExpense(e,id){
     try{
         let itemSelect = e.target.parentElement.parentElement;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/`+id, {headers: {"Authorization":token}});
+        const response = await api.get(`/expense/`+id, {headers: {"Authorization":token}});
         if(response.status===200){
             let obj = response.data;
             amount.value = obj.amount;
@@ -213,7 +227,7 @@ function createPageButton(pageNo, container, isCurrentPage){
 
 async function updateProfileName(){
     try{
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/user/`, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await api.get(`/user/`, {headers: {"Authorization": localStorage.getItem("token")}});
         document.getElementById('profilename').innerText = response.data.username;
     }
     catch(err){

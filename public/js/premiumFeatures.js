@@ -64,6 +64,7 @@ function showReportDownloadBtn(){
 function loadLeaderBoardPage(){
     document.querySelector('.leaderboard').classList.remove('inactive');
     getLeaderboard(1);
+    getUserStats();
 }
 
 function loadReportPage(){
@@ -77,7 +78,7 @@ async function getLeaderboard(pageNo, event) {
         if(event){
             CURR_TIME_PERIOD = event.target.textContent;
         }
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/leaderboard?timelinecode=${timeLineCode[CURR_TIME_PERIOD]}&page=${pageNo}&rowsperpage=10`, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await api.get(`/premium/leaderboard?timelinecode=${timeLineCode[CURR_TIME_PERIOD]}&page=${pageNo}&rowsperpage=10`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 200){
             showLeaderBoard(response.data.leaderboard);
             showPagination(response.data, pageContainerLeaderBoard);
@@ -137,7 +138,7 @@ async function downloadReport(){
         if(datetype==='year' && (datevalue>2100 || datevalue<2000))
             return alert('select year between 2000-2100');
 
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/download/?datetype=${datetype}&datevalue=${datevalue}`, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await api.get(`/premium/download/?datetype=${datetype}&datevalue=${datevalue}`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status===201){
             console.log(document.getElementById('iframe'));
             document.getElementById('iframe').setAttribute('src','https://docs.google.com/viewer?url='+response.data.reportURL+'&embedded=true');
@@ -193,7 +194,7 @@ function generatereport(){
 
 async function generateCategoryAggr(datetype, datevalue){
     try{
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/report/category?datetype=${datetype}&datevalue=${datevalue}`, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await api.get(`/premium/report/category?datetype=${datetype}&datevalue=${datevalue}`, {headers: {"Authorization": localStorage.getItem("token")}});
         let total = 0;
         const xval = response.data.map(item => item.category);
         const yval = response.data.map(item => {
@@ -215,7 +216,7 @@ async function generateCategoryAggr(datetype, datevalue){
 
 async function generateExpenseAggr(datetype, datevalue){
     try{
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/report/timeline?datetype=${datetype}&datevalue=${datevalue}`, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await api.get(`/premium/report/timeline?datetype=${datetype}&datevalue=${datevalue}`, {headers: {"Authorization": localStorage.getItem("token")}});
         let xval = [];
         let yval = [];
         if(datetype==='year'){
@@ -247,15 +248,13 @@ async function generateExpenseAggr(datetype, datevalue){
 
 
 
-async function getUserStats(){
+async function getUserStats(event){
     try{
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/user/stat?timelinecode=0`, {headers: {"Authorization": localStorage.getItem("token")}});
-        if(response.status===201){
-            const a = document.createElement('a');
-            a.href = response.data.reportURL;
-            a.download = 'expenseReport.csv';
-            a.click();
+        if(event){
+            CURR_TIME_PERIOD = event.target.textContent;
         }
+        const response = await api.get(`/user?timelinecode=${timeLineCode[CURR_TIME_PERIOD]}`, {headers: {"Authorization": localStorage.getItem("token")}});
+        document.getElementById('user-expense-total').innerHTML = `total spendings: ${response.data.filtered_expense}`;
     }
     catch(err){
         if(err.response) 
