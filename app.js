@@ -63,6 +63,7 @@ const serverInit = async function (){
         const con = await mongoose.connect(`${process.env.MONGODB_CONN_STR}`);
         app.listen(process.env.APP_PORT || 3000);
         console.log(`Server is running on PORT: ${process.env.APP_PORT}`);
+        mongoose.set('debug', true);
     }
     catch(err){
         console.error(err);

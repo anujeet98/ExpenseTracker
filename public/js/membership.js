@@ -1,7 +1,6 @@
 const premiumTag = document.getElementById("premiumTag");
 const headerTop = document.getElementById("header-top");
 
-document.addEventListener('DOMContentLoaded', membershipStatus);
 
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
@@ -17,7 +16,7 @@ function membershipStatus() {
     const decoded = parseJwt(localStorage.getItem("token"));
     if(decoded.isPremium === true){
         premiumTag.style.visibility = 'visible';
-        viewPremiumFeatures();
+        laodPremiumFeatures();
     }
     else{
         premiumTag.style.visibility = 'hidden';

@@ -6,7 +6,10 @@
     <title>Expense Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/randomcolor@0.6.2/randomColor.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
@@ -24,31 +27,18 @@
                 </div>
                 <div class="col">
                     <div class="d-flex align-items-center float-end mt-2">
-                        <h5>Anujeet Swain</h5><i class="fa fa-user-circle-o ms-3 " style="font-size:32px"></i>
+                        <h5 id="profilename"></h5><i class="fa fa-user-circle-o ms-3 " style="font-size:32px"></i>
                     </div>
                 </div>
             </div><hr class="m-0 ">
 
             <div class="navigation row">
                 <nav class="navbar navbar-expand-lg navbar-dark bg-dark pt-0 pb-0 container-fluid">
-                    <!-- <a class="navbar-brand" href="#">Your Brand</a> -->
-                    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button> -->
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav me-auto ms-3" id="premiumFeatures">
                             <li class="nav-item">
-                                <a class="nav-link" href="#add-expense">Add Expense</a>
+                                <a class="nav-link" href="#" onclick="switchview(loadExpensePage)">Add Expense</a>
                             </li>
-                            <!-- <li class="nav-item">
-                                <a class="nav-link" href="#leaderboard">Leaderboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#download-report">Download Report</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#charts">Charts</a>
-                            </li> -->
                         </ul>
                     </div>
                 </nav>
@@ -56,7 +46,7 @@
             <div class="content row bg-info">
                 <div class="expense container row bg-light m-0">
                     <div class="left col-md-6 border-end ">
-                        <form id="ExpenseForm" class="inactive p-5">
+                        <form id="ExpenseForm" class="p-5">
                             <!-- <div class="header-text mb-4">
                                 <h4>Welcome back, 🤗</h4>
                                 <small>Sign in to your account and continue your journey with us.</small>
@@ -87,7 +77,7 @@
                         </form>
                     </div>
                     <div class="right col-md-6 fs-6 ">
-                        <div class="pt-2 ps-3 pe-3">
+                        <div class="pt-5 ps-3 pe-3">
                             <div class="row mb-3 d-flex justify-content-center ">
                                 <div class="col d-flex mb-1 ">
                                     <label for="date-picker" class="col-form-label-sm me-1">Date: </label>
@@ -104,8 +94,8 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="expenseTable row form-group mb-2">
-                                <table id="expenseTable" class="table table-sm  table-hover">
+                            <div class="expenseTable row form-group mb-1">
+                                <table id="expenseTable" class="table table-sm table-hover">
                                     <thead>
                                         <tr>
                                             <th>Amount</th>
@@ -119,16 +109,92 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="pageContainer" class="d-flex justify-content-center ">
+                            <div id="pageContainer-expense" class="d-flex justify-content-center ">
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="leaderboard container row bg-light m-0 inactive">
+                    <div class="left col-md-6 p-5">
+                        <div class="container d-flex justify-content-around  ">
+                            <button class="btn btn-dark " onclick="getLeaderboard(1,event)">All Time</button>
+                            <button class="btn btn-dark " onclick="getLeaderboard(1,event)">Yearly</button>
+                            <button class="btn btn-dark " onclick="getLeaderboard(1,event)">Monthly</button>
+                        </div>
+                        <div class="leaderboardContainer row form-group mt-5 mb-1 ps-3 pe-3">
+                            <table id="leaderBoardTable" class="table table-sm  table-hover justify-content-center">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Username</th>
+                                        <th>Total Spends</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboard-tbody">
+                                </tbody>
+                            </table>
+                            <div id="pageContainer-leaderboard" class="d-flex justify-content-center ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right col-md-6 ">
+                        <canvas id="myChart" class="bg-dark-subtle mt-5   "></canvas>
+                        <hr>
+                        <div class="container">
+                            <h3>Your Stats</h3>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report container row bg-light m-0 inactive">
+                    <div class="left col-md-6 border-end p-5 ">
+                        <div class="container d-flex justify-content-around  ">
+                            <div class="container">
+                                <div class="form-check form-check-inline mb-3">
+                                    <input class="form-check-input" type="radio" id="monthly" name="interval" value="monthly" onclick="toggle_date(event)" checked>
+                                    <label class="form-check-label" for="monthly">Monthly</label>
+                                  </div>
+                            
+                                  <div class="form-check form-check-inline mb-3">
+                                    <input class="form-check-input" type="radio" id="yearly" name="interval" onclick="toggle_date(event)" value="yearly">
+                                    <label class="form-check-label" for="yearly">Yearly</label>
+                                  </div>
+                            
+                                  <div class="form-group ml-3 datepickercontainer mb-3">
+                                    <label for="datePicker">Select Month:</label>
+                                    <input type="month" class="form-control" id="datePicker" name="month" required>
+                                  </div>
+                            
+                                  <button type="button" class="btn btn-primary mt-2 mb-3" onclick="generatereport()">Generate</button>
+                                  <button type="button" class="btn btn-primary ms-3 mt-2 mb-3" onclick="downloadReport()">Download</button>
+
+                                  <!-- <object id="fgh" data="https://xpense-tracker-app.s3.amazonaws.com/expense_65bb7f1e34ad1778f5820300_Tue%20Feb%2006%202024%2004%3A45%3A57%20GMT%2B0530%20%28India%20Standard%20Time%29.csv"  width="100%" height="400"></object> -->
+                                  <iframe id="iframe" src="" width="100%" height="200px" frameborder="1"></iframe>  
+                                  <!-- <iframe id="iframe" src="" width="100%" height="400" style="border:1px solid black;"> -->
+                                <!-- </iframe> -->
+                                <!-- https://view.officeapps.live.com/op/embed.aspx?src= -->
+                                <!-- https://xpense-tracker-app.s3.amazonaws.com/expense_65bb7f1e34ad1778f5820300_Tue%20Feb%2006%202024%2004%3A45%3A57%20GMT%2B0530%20%28India%20Standard%20Time%29.csv -->
+                              </div>
+                            
+                        </div>
+                    </div>
+                    <div class="right col-md-6 ">
+                        <canvas id="piechart" class="bg-light ps-5"></canvas>
+                        <div id="totalexpense" class="d-flex container justify-content-center mt-5 "></div>
+                        <hr>
+                        <canvas id="linechart" class="bg-light mt-3"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+  
     <script>
+
     </script>
+
     <!-- JS for the backend logic -->
     <script src="../public/js/expense.js"></script>
     <script src="../public/js/membership.js"></script>

@@ -1,5 +1,5 @@
 const form = document.getElementById("ExpenseForm");
-const pageContainer = document.getElementById("pageContainer");
+const pageContainerExpense = document.getElementById("pageContainer-expense");
 const dynamicPage = document.getElementById("dynamicPage");
 const expenseTable = document.getElementById("expense-tbody");
 
@@ -8,24 +8,34 @@ const amount = document.getElementById("amt");
 const description = document.getElementById("descr");
 const category = document.getElementById("cat");
 
+let editing=false;
+let editId;
+
 const BACKEND_ADDRESS = 'localhost:3000';
 
-// EventListers
+//-----------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', ()=>{
+    updateProfileName();
+    membershipStatus();
+    loadExpensePage();
+});
+
 form.addEventListener('submit',addExpense);
 dynamicPage.addEventListener('change', ()=>{
     localStorage.setItem("ROWS_PER_PAGE", dynamicPage.value);
     getExpenses(1, localStorage.getItem("ROWS_PER_PAGE"));
+});
+document.getElementById('date-picker').addEventListener('change', ()=>{
+    getExpenses(1,localStorage.getItem("ROWS_PER_PAGE") || 2);
 })
-document.addEventListener('DOMContentLoaded', ()=>{
+//-------------------------------------------------------------------------------------------
+
+function loadExpensePage(){
+    document.querySelector('.expense').classList.remove('inactive');
     const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
     dynamicPage.value = rowsPerPage;
     getExpenses(1, rowsPerPage);
-});
-
-let editing=false;
-let editId;
-
-//-------------------------------------------------------------------------------------------
+};
 
 async function addExpense(e) {
     e.preventDefault();
@@ -49,7 +59,6 @@ async function addExpense(e) {
                     category.value = '';
                     editing=false;
                     getExpenses(1, rowsPerPage);
-                    // updateNewExpense_Li(response.data.updatedExpenseDetail);
                 }
             }
             else{
@@ -60,7 +69,6 @@ async function addExpense(e) {
                     description.value = '';
                     category.value = '';
                     getExpenses(1, rowsPerPage);
-                    // updateNewExpense_Li(response.data.newExpenseDetail);
                 }
             }
         }
@@ -75,11 +83,12 @@ async function getExpenses(pageNo, rowsPerPage){
     let page = pageNo;
     try{
         editing=false;
+        const selectedDate = document.getElementById('date-picker').value;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/?page=${page}&rowsperpage=${rowsPerPage}`, {headers: {"Authorization":token}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/?page=${page}&rowsperpage=${rowsPerPage}&date=${selectedDate}`, {headers: {"Authorization":token}});
         if(response.status === 200){
             showExpenses(response.data.expenses);
-            showPagination(response.data);
+            showPagination(response.data, pageContainerExpense);
         }
     }
     catch(err){
@@ -174,26 +183,49 @@ function showExpenses(res){
 }
 
 
-function showPagination(res){
+function showPagination(res,container){
+    const pageContainer = container
     pageContainer.innerHTML = "";
     if(res.hasPreviousPage)
-        createPageButton(res.previousPage, false);
-    createPageButton(res.currentPage, true);
+        createPageButton(res.previousPage, container, false);
+    createPageButton(res.currentPage, container, true);
     if(res.hasNextPage)
-        createPageButton(res.nextPage, false);
+        createPageButton(res.nextPage, container, false);
 }
 
-function createPageButton(pageNo, isCurrentPage){
+function createPageButton(pageNo, container, isCurrentPage){
     const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
 
     const pageButton = document.createElement('button');
     pageButton.onclick = () => {
-        getExpenses(pageNo,rowsPerPage); 
+        if(container.id === 'pageContainer-expense')
+            getExpenses(pageNo,rowsPerPage); 
+        else
+            getLeaderboard(pageNo);
     }
     pageButton.className = "pageBtn btn-sm fs-6 m-1 ";
     if(isCurrentPage)
         pageButton.classList.add('bg-dark-subtle');
     pageButton.appendChild(document.createTextNode(pageNo));
 
-    pageContainer.appendChild(pageButton);
+    container.appendChild(pageButton);
+}
+
+async function updateProfileName(){
+    try{
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/user/`, {headers: {"Authorization": localStorage.getItem("token")}});
+        document.getElementById('profilename').innerText = response.data.username;
+    }
+    catch(err){
+        if(err.response) 
+            alert(err.response.data.error);
+    }
+}
+
+function switchview(cb){
+    //content child all display none
+    const x = document.querySelectorAll('.content>div');
+    x.forEach(item => item.classList.add('inactive'));
+    cb();
+
 }

@@ -11,14 +11,43 @@ exports.getExpenses = async(req,res,next) => {
         if(inputValidator.number(req.query.page) || inputValidator.number(req.query.rowsperpage)){
             return res.status(422).json({ error: 'bad input parameters' });
         }
-
+        
         const page = +req.query.page;
         const ITEMS_PER_PAGE = +req.query.rowsperpage;
+        const reqDate = req.query.date;
         //+process.env.EXPENSE_PER_PAGE;
+        const currentDate = new Date(reqDate)
+        const nextDate = new Date(currentDate);
+        nextDate.setDate(currentDate.getDate() + 1);
 
         const [totalExpenseCount, expenses] = await Promise.all([
-            Expense.countDocuments({userId: user.id}),
-            Expense.find({userId: user.id}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
+            Expense.countDocuments(
+                {
+                    userId: user.id,
+                    ...(
+                        reqDate ? 
+                            {
+                                date: {
+                                    $gt : currentDate,
+                                    $lt : nextDate,
+                                }
+                            }
+                        :{}),
+                }
+            ),
+            Expense.find(
+                {
+                    userId: user.id,
+                    ...(
+                        reqDate ? 
+                            {
+                                date: {
+                                    $gt : currentDate,
+                                    $lt : nextDate,
+                                }
+                            }
+                        :{}),
+                }).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
         ]);
         const resJSON = {
             expenses: expenses,
@@ -49,26 +78,19 @@ exports.addExpense = async(req,res,next) => {
             amount: amount,
             description: description,
             category: category,
+            date: new Date(),
             userId: req.user._id
         });
 
         req.user.total_expense += +amount;
-        let resJSON;
 
         const session = await mongoose.startSession();
         session.startTransaction(); 
         try{
-            const [expenseRes, userRes] = await Promise.all([
+            await Promise.all([
                 newExpense.save({session}),
                 req.user.save({session})
             ]);
-
-            resJSON = {
-                "newExpenseDetail" : {
-                    "id" : expenseRes.id, ...req.body
-                }
-            }
-
             await session.commitTransaction(); 
         }
         catch(err){
@@ -79,7 +101,7 @@ exports.addExpense = async(req,res,next) => {
             await session.endSession();
         }
         
-        return res.status(201).json(resJSON);
+        return res.status(201).json({status: "success"});
     }
     catch(err){
         console.error('addExpense error: ',err);
@@ -176,11 +198,6 @@ exports.updateExpense = async(req,res,next) => {
         finally{
             session.endSession();
         }
-        // let resJSON = {
-        //     "updatedExpenseDetail" : {
-        //         "id" : req.params.id, ...req.body
-        //     }
-        // }
 
         res.status(201).json({message: "success"});
     }

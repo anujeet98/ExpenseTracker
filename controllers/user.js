@@ -2,13 +2,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const Expense = require('../models/expense');
 
 const inputValidator = require('../util/input-validator');
 
 module.exports.signup = async(req,res,next) => {
     try{
         const {username, email, password} = req.body;
-        if(inputValidator.text(username) || inputValidator.text(email) || inputValidator.text(password))
+        if(inputValidator.text(username) || inputValidator.email(email) || inputValidator.text(password))
             return res.status(422).json({error: "bad input parameters"});
         if(inputValidator.email(email))
             return res.status(422).json({error: "bad input parameters", message: "Invalid email received"});
@@ -56,6 +57,17 @@ module.exports.signin = async(req,res,next) => {
     }
     catch(err){
         console.log('signin error: ',err);
+        res.status(500).json({error: 'Internal server error while signin'});
+    }
+}
+
+
+exports.getUserInfo = async(req, res, next) => {
+    try{
+        res.status(200).json({username: req.user.username, email: req.user.email});
+    }
+    catch(err){
+        console.log('getUserInfo error: ',err);
         res.status(500).json({error: 'Internal server error while signin'});
     }
 }

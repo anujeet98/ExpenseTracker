@@ -31,3 +31,19 @@ td {
     white-space: nowrap;
     text-overflow: ellipsis; /* Adds ellipsis (...) for hidden text */
 }
+
+.inactive
+{
+    display: none;
+}
+
+canvas{
+    width:100%;
+    max-width:700px;
+    height: 250px;
+}
+
+#leaderBoardTable thead,
+#leaderBoardTable tbody{
+    text-align: center;
+}
