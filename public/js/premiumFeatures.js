@@ -17,6 +17,7 @@ const laodPremiumFeatures = () => {
 }
 
 function getCurrentMonth(){
+    document.getElementById('monthly').click();
     var datePicker = document.getElementById('datePicker');
     var date = new Date();
     var month = "0" + (date.getMonth() + 1);

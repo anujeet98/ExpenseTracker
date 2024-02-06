@@ -20,9 +20,9 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response.status === 401) {
-            console.log('Token expired or unauthorized. Redirecting to login.');
+            alert('Token expired or unauthorized. Redirecting to login.');
             localStorage.removeItem('token');
-            window.location.href = '/signin.html';
+            window.location.href = '/home.html';
         }
         return Promise.reject(error);
     }
@@ -41,9 +41,12 @@ dynamicPage.addEventListener('change', ()=>{
 });
 document.getElementById('date-picker').addEventListener('change', ()=>{
     getExpenses(1,localStorage.getItem("ROWS_PER_PAGE") || 2);
-})
+});
 //-------------------------------------------------------------------------------------------
-
+function userLogout(){
+    localStorage.removeItem('token');
+    window.location.href = '/home.html';
+}
 function loadExpensePage(){
     document.querySelector('.expense').classList.remove('inactive');
     const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
@@ -241,5 +244,4 @@ function switchview(cb){
     const x = document.querySelectorAll('.content>div');
     x.forEach(item => item.classList.add('inactive'));
     cb();
-
 }

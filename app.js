@@ -44,7 +44,7 @@ app.use((req,res) => {
     console.log(__dirname, req.url);
     const fileExists = fs.existsSync(path.join(__dirname, `/views/${req.url}`));
     if(req.url === '/'){
-        req.url = 'login.html';
+        req.url = 'home.html';
         return res.sendFile(path.join(__dirname, `/views/${req.url}`));
     }
     else if(fileExists)

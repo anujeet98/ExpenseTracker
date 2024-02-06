@@ -50,7 +50,7 @@ async function buyPremium(e){
                         if(updateResponse.status === 200){
                             //add ispremium token in LS
                             localStorage.setItem("token",updateResponse.data.token);
-                            headerTop.removeChild(document.getElementById('premiumBtn'));
+                            document.getElementById('premiumFeatures').removeChild(document.getElementById('premiumBtn'));
                             membershipStatus();
                             return alert('payment successful for premium membership');
                         }
