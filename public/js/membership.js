@@ -1,8 +1,6 @@
-const premiumBtn = document.getElementById("premiumBtn");
 const premiumTag = document.getElementById("premiumTag");
+const headerTop = document.getElementById("header-top");
 
-
-premiumBtn.addEventListener('click', buyPremium);
 document.addEventListener('DOMContentLoaded', membershipStatus);
 
 function parseJwt (token) {
@@ -19,12 +17,18 @@ function membershipStatus() {
     const decoded = parseJwt(localStorage.getItem("token"));
     if(decoded.isPremium === true){
         premiumTag.style.visibility = 'visible';
-        premiumBtn.style.visibility = 'hidden';
         viewPremiumFeatures();
     }
     else{
         premiumTag.style.visibility = 'hidden';
-        premiumBtn.style.visibility = 'visible';
+
+        const buyBtn = document.createElement('button');
+        buyBtn.appendChild(document.createTextNode('Become Premium User'));
+        buyBtn.setAttribute("id", "premiumBtn");
+        buyBtn.onclick = ()=>{
+            buyPremium();
+        };
+        headerTop.appendChild(buyBtn);
     }
 };
 
@@ -33,7 +37,7 @@ function membershipStatus() {
 async function buyPremium(e){
     try{
         const token = localStorage.getItem("token");
-        const response = await axios.get('http://54.234.60.93:3000/purchase/premium-membership', {headers: {"Authorization":token}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/purchase/premium-membership`, {headers: {"Authorization":token}});
 
         if(response.status === 201){
 
@@ -42,17 +46,18 @@ async function buyPremium(e){
                 "order_id": response.data.order.id,
                 "handler": async function(response) {
                     try{
-                        const updateResponse = await axios.put('http://54.234.60.93:3000/purchase/update-membership',response ,{headers: {"Authorization":token}} );
-                        console.log(updateResponse);
+                        const updateResponse = await axios.put(`http://${BACKEND_ADDRESS}/purchase/update-membership`,response ,{headers: {"Authorization":token}} );
                         if(updateResponse.status === 200){
                             //add ispremium token in LS
                             localStorage.setItem("token",updateResponse.data.token);
+                            headerTop.removeChild(document.getElementById('premiumBtn'));
                             membershipStatus();
                             return alert('payment successful for premium membership');
                         }
                     }
                     catch(err){
-                        return alert(err.response.data.error);
+                        if(err.response) 
+                            return alert(err.response.data.error);
                     }
                 }
             }
@@ -63,15 +68,17 @@ async function buyPremium(e){
 
             rzpPayment.on('payment.failed', async ()=>{
                 try{
-                    await axios.put('http://54.234.60.93:3000/purchase/update-membership',{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
+                    await axios.put(`http://${BACKEND_ADDRESS}/purchase/update-membership`,{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
                 }
                 catch(err){
-                    alert(err.response.data.error);
+                    if(err.response) 
+                        alert(err.response.data.error);
                 }
             });
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }

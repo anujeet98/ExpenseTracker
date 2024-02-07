@@ -1,9 +1,11 @@
-const forgetPasswordForm = document.getElementById("forgetPasswordForm");
+const forgetPasswordForm = document.getElementById("forgetPasswordform");
+document.getElementById("forgetPasswordForm");
 const email = document.getElementById("email");
+console.log(forgetPasswordForm)
 forgetPasswordForm.addEventListener('submit',forgetPassword);
     
 // document.addEventListener('DOMContentLoaded', (e)=>{});
-
+const BACKEND_ADDRESS = 'localhost:3000';
 
 async function forgetPassword(e){
     try{
@@ -12,13 +14,14 @@ async function forgetPassword(e){
             return alert('kindly fill your email');
         }
     
-        const response = await axios.get(`http://54.234.60.93:3000/password/forgotpassword/${email.value}`);
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/password/forget/${email.value}`);
         if(response.status === 200){
             alert(response.data.message);
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }
 

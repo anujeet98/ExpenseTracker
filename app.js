@@ -1,22 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');   
-const bodyParser = require('body-parser');
-const {Sequelize} = require('sequelize');
-const helmet = require('helmet');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
+const mongoose = require('mongoose');
+// const helmet = require('helmet');
+// const https = require('https');
 // const compression = require('compression');
-
-
-const sequelize = require('./util/db');
-const User = require('./models/user-model');
-const Order = require('./models/order-model');
-const Expense = require('./models/expense-model');
-const ForgetPassword = require('./models/forget-password');
-const Download = require('./models/download-model');
 
 const expenseRoutes = require('./routes/expense-route');
 const userRoutes = require('./routes/user-route');
@@ -38,7 +29,7 @@ app.use(morgan('combined', {stream: accessLogStream}));
 //---------------------------------------------------------------
 
 app.use(cors());
-app.use(bodyParser.json({extended: false}));
+app.use(express.json({extended: false}));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 //--------------------------------------------------------------
@@ -50,48 +41,32 @@ app.use('/premium', premiumRoutes);
 app.use('/password', passwordRoutes);
 
 app.use((req,res) => {
-    console.log(req.url)
-    res.sendFile(path.join(__dirname, `/views/${req.url}`));
+    console.log(__dirname, req.url);
+    const fileExists = fs.existsSync(path.join(__dirname, `/views/${req.url}`));
+    if(req.url === '/'){
+        req.url = 'login.html';
+        return res.sendFile(path.join(__dirname, `/views/${req.url}`));
+    }
+    else if(fileExists)
+        return res.sendFile(path.join(__dirname, `/views/${req.url}`));
+    else
+        return res.sendFile(path.join(__dirname, `/views/error404.html`));
 })
-
-
-//-------------------------------------------------------------
-
-User.hasMany(Expense);
-Expense.belongsTo(User);
-
-User.hasMany(Order);
-Order.belongsTo(User);
-
-User.hasMany(ForgetPassword);
-ForgetPassword.belongsTo(User);
-
-User.hasMany(Download);
-Download.belongsTo(User);
-
 
 //-------------------------------------------------------------
 //for self signed SSL certificate use
 // const privateKey = fs.readFileSync('server.key');
 // const certificate = fs.readFileSync('server.cert');
 
-const serverSync = async() => {
+const serverInit = async function (){
     try{
-        // await sequelize.sync({force:true});
-        await sequelize.sync
+        const con = await mongoose.connect(`${process.env.MONGODB_CONN_STR}`);
         app.listen(process.env.APP_PORT || 3000);
-
-        // https
-        //     .createServer({key: privateKey, cert: certificate},app)
-        //     .listen(process.env.APP_PORT || 3000);
-
         console.log(`Server is running on PORT: ${process.env.APP_PORT}`);
     }
     catch(err){
         console.error(err);
     }
-}
-
-serverSync();
-
+};
+serverInit();
 

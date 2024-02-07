@@ -5,20 +5,20 @@ const mailjet = require('node-mailjet').Client.apiConnect(
 const uuid = require('uuid');
 const bcrypt = require('bcrypt');
 
-const User = require('../models/user-model');
-const ForgetPassword = require('../models/forget-password');
+const User = require('../models/user');
+const ForgetPassword = require('../models/password');
 const inputValidator = require('../util/input-validator');
 
 //----------------------------------------------------------------------------------------------------
 
-exports.forgetPassword = async(req, res, next) => {
+exports.forget = async(req, res, next) => {
     try{
         const email = req.params.email;
-        const user = await User.findOne({where: {email: email}});
+        const user = await User.findOne({email: email});
 
         if(user){
             const id = uuid.v4();
-            await user.createForget_password({id, active: true});   
+            await new ForgetPassword({_id: id, active: true, userId: user._id}).save();
 
             const request = await mailjet.post('send').request({
                 FromEmail: process.env.SIB_SENDER_EMAIL,
@@ -31,7 +31,7 @@ exports.forgetPassword = async(req, res, next) => {
                     <br>
                     <h3>Dear ${user.username},</h3><br>
                     <br>
-                    <p>Please use the following link to </p> <a href="${process.env.BACKEND_URL}password/resetpassword/${id}">reset</a> <p> your password.</p><br>
+                    <p>Please use the following link to </p> <a href="${process.env.BACKEND_ADDR}/password/reset/${id}">reset</a> <p> your password.</p><br>
                     <br><br>
                     <h5>Thank You<h5><br>
                 `,
@@ -45,19 +45,20 @@ exports.forgetPassword = async(req, res, next) => {
         }
     }
     catch(err){
-        console.log('Error-getResetPassword: ',err);
+        console.log('Error-forgetPassword: ',err);
         res.status(500).json({error: 'Internal server error while sending reset password email'});
     }
 
 };
 
 
-exports.resetPassword = async (req, res, next) => {
+exports.reset = async (req, res, next) => {
     try{
         const requestId = req.params.id;
-        const passwordRequest = await ForgetPassword.findOne({where: {id: requestId}});
+        const passwordRequest = await ForgetPassword.findOne({_id: requestId});
         if(passwordRequest && passwordRequest.active){
-                await passwordRequest.update({active: false});
+            passwordRequest.active = false;
+                await passwordRequest.save();
                 res.status(200).sendFile('reset-password.html',{root: 'views'});
         }
         else{
@@ -72,7 +73,7 @@ exports.resetPassword = async (req, res, next) => {
 
 
 
-exports.updatePassword = async (req, res, next) => {
+exports.update = async (req, res, next) => {
     try{
         const requestId = req.body.requestId;
         const newPassword = req.body.newPassword;
@@ -81,9 +82,9 @@ exports.updatePassword = async (req, res, next) => {
             return res.status(400).json({ error: 'bad input parameters' });
         }
 
-        const passwordRequest = await ForgetPassword.findOne({where: {id: requestId}});
+        const passwordRequest = await ForgetPassword.findOne({_id: requestId});
         if(passwordRequest){
-            const user = await User.findOne({where: {id:passwordRequest.userId}});
+            const user = await User.findOne({_id:passwordRequest.userId});
             if(user){
                 user.password = await bcrypt.hash(newPassword, 10);
                 await user.save();

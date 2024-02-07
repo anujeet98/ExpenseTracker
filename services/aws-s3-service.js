@@ -18,7 +18,7 @@ exports.uploadToS3 = (filename, data) => {
                     reject();
                 }
                 else{
-                    console.log('success', result);
+                    // console.log('success', result);
                     resolve(result.Location);
                 }
             });

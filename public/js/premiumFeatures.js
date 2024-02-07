@@ -1,48 +1,78 @@
 const leaderboardContainer = document.getElementById("leaderboardContainer");
+const leaderBoardTable = document.getElementById("leaderBoardTable");
 const premiumFeatures = document.getElementById("premiumFeatures");
+const leaderboardHeader = document.getElementById('leaderboardHeader');
 
-viewPremiumFeatures = () => {
+const viewPremiumFeatures = () => {
     showLeaderBoardBtn();
     showReportDownloadBtn();
 }
 
 function showLeaderBoardBtn () {
-    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard()" style="margin: 1% 1%;">Leaderboard</button>`;
+    premiumFeatures.innerHTML += `<button id="leaderboardBtn" onclick="getLeaderboard()" style="margin: 1% 1%">Leaderboard</button>`;
 }
 
 async function getLeaderboard() {
     try{
-        const response = await axios.get('http://54.234.60.93:3000/premium/leaderboard', {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/leaderboard`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 200){
-            console.log(response)
             showLeaderBoard(response.data);
         }
     }
     catch(err){
-        if(err.response.status>=401){
+        if(err.response){
             alert(err.response.data.error);
         }
     }
 }
 
 function showLeaderBoard(data){
-    leaderboardContainer.innerHTML = "";
-    leaderboardContainer.innerHTML += "<div><h1>Leaderboard:</h1></div><br>";
+
+    leaderBoardTable.innerHTML="";
+    leaderboardHeader.innerHTML="";
+
+    leaderboardHeader.innerHTML += "<h1>Leaderboard:</h1><br>";
+    const tr = document.createElement('tr');
+
+    const thUsername = document.createElement('th');
+    thUsername.innerText = 'Username';
+
+    const thExpense = document.createElement('th');
+    thExpense.innerText = 'Total Expense';
+
+    tr.appendChild(thUsername);
+    tr.appendChild(thExpense);
+    leaderBoardTable.appendChild(tr);
+
+
     data.forEach((element,i) => {
-        leaderboardContainer.innerHTML += `<div><p></p>${i+1}] Username: ${element.username}; Total Expense: ${element.total_expense}</div><br>`;
+        const trUser = document.createElement('tr');
+        trUser.className="user";
+
+        let tdUser = document.createElement('td');
+        tdUser.innerHTML = element.username;
+
+        let tdExpense = document.createElement('td');
+        tdExpense.innerHTML = element.total_expense;
+
+        trUser.appendChild(tdUser);
+        trUser.appendChild(tdExpense);
+        leaderBoardTable.appendChild(trUser);
     });
+
+
 }
 
 
 //-------------------------------------------------------------------------------------------------------------------
 
 function showReportDownloadBtn(){
-    premiumFeatures.innerHTML += `<button id="reportDownloadBtn" onclick="downloadReport()" style="margin: 1% 1%;">Download Report</button>`;
+    premiumFeatures.innerHTML += `<button id="reportDownloadBtn" onclick="downloadReport()" style="margin: 1% 1%">Download Report</button>`;
 }
 
 async function downloadReport(){
     try{
-        const response = await axios.get('http://54.234.60.93:3000/premium/download/', {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await axios.get(`http://${BACKEND_ADDRESS}/premium/download/`, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status===201){
             const a = document.createElement('a');
             a.href = response.data.reportURL;
@@ -51,8 +81,7 @@ async function downloadReport(){
         }
     }
     catch(err){
-        alert(err.response.data.error);
+        if(err.response) 
+            alert(err.response.data.error);
     }
 }
-
-// {status: 201, data: {reportURL: "https://drive.google.com/file/d/1ahCPosLSELYrQFLpWzHoIZS4pPMu2e13/view?usp=drive_link"}};//

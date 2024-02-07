@@ -3,6 +3,8 @@ const email = document.getElementById("email");
 const password = document.getElementById("password");
 const submitBtn = document.getElementById("submit");
 
+const BACKEND_ADDRESS = 'localhost:3000';
+
 //=====================================================================================================
 
 
@@ -26,18 +28,17 @@ async function postSignup(event){
             email: email.value,
             password: password.value
         };
-
-        const response = await axios.post('http://54.234.60.93:3000/user/signup', signupObj);
+        const response = await axios.post(`http://${BACKEND_ADDRESS}/user/signup`, signupObj);
         if(response.status===201){
             alert('user created successfully.\nKindly login now..');
             clearUserForm();
-            window.location.href = "login.html";
+            window.location.href = "signin.html";
         }
     }catch(err){
-        if(err.response.status===400){
+        if (err.response) {
+            document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`;
             return alert(err.response.data.error);
         }
-        document.body.innerHTML += `<div style="color:red">${err}: ${err.response.data.error}</div>`
     }
 }
 
