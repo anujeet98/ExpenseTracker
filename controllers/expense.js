@@ -87,10 +87,8 @@ exports.addExpense = async(req,res,next) => {
         const session = await mongoose.startSession();
         session.startTransaction(); 
         try{
-            await Promise.all([
-                newExpense.save({session}),
-                req.user.save({session})
-            ]);
+            await newExpense.save({session}),
+            await req.user.save({session})
             await session.commitTransaction(); 
         }
         catch(err){
@@ -124,10 +122,8 @@ exports.deleteExpense = async (req,res,next) => {
         const session = await mongoose.startSession();
         session.startTransaction();
         try{
-            const[expenseRes, userRes] = await Promise.all([
-                oldExpense.deleteOne({_id: expenseId, userId: user.id}, {session}),
-                user.save({session})
-            ]);
+            await oldExpense.deleteOne({_id: expenseId, userId: user.id}, {session}),
+            await user.save({session})
             await session.commitTransaction();
         }
         catch(err){
@@ -184,10 +180,8 @@ exports.updateExpense = async(req,res,next) => {
         const session = await mongoose.startSession();
         session.startTransaction();
         try{
-            const [expenseRes, userRes] = await Promise.allSettled([
-                oldExpense.save({session}),  //save the updated values
-                user.save({session})
-            ]);
+            await oldExpense.save({session});  //save the updated values
+            await user.save({session});
 
             await session.commitTransaction();
         }

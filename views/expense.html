@@ -121,13 +121,13 @@
                 </div>
 
                 <div class="leaderboard container row bg-light m-0 inactive">
-                    <div class="left col-lg-6 pt-4 pt-lg-5">
-                        <div class="container d-flex justify-content-evenly  ">
-                            <button class="btn btn-dark " onclick="getLeaderboard(1,event); getUserStats(event);">All Time</button>
-                            <button class="btn btn-dark " onclick="getLeaderboard(1,event); getUserStats(event);">Yearly</button>
-                            <button class="btn btn-dark " onclick="getLeaderboard(1,event); getUserStats(event);">Monthly</button>
+                    <div class="left col-lg-6 pt-4 pt-lg-5 d-flex flex-column justify-content-start ">
+                        <div class="container d-flex justify-content-around    ">
+                            <button class="btn btn-dark w-25 " onclick="getLeaderboard(1,event); getUserStats(event);">All Time</button>
+                            <button class="btn btn-dark w-25 " onclick="getLeaderboard(1,event); getUserStats(event);">Yearly</button>
+                            <button class="btn btn-dark w-25 " onclick="getLeaderboard(1,event); getUserStats(event);">Monthly</button>
                         </div>
-                        <div class="leaderboardContainer row form-group mt-1 mb-1 ps-3 pe-3">
+                        <div class="leaderboardContainer row form-group mt-5 mb-1 ps-3 pe-3">
                             <table id="leaderBoardTable" class="table table-sm  table-hover align-content-center ">
                                 <thead>
                                     <tr>
@@ -185,7 +185,7 @@
                             
                         </div>
                     </div>
-                    <div class="right col-lg-6 ">
+                    <div class="right col-lg-6 d-flex flex-column ">
                         <canvas id="piechart" class="bg-light ms-auto me-auto"></canvas>
                         <div id="totalexpense" class="d-flex container justify-content-center mt-4 "></div>
                         <hr>

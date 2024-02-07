@@ -1,7 +1,6 @@
  
 .outer{
-    height: 100%;
-    background-color: red;
+    height: 100vh;
 }
 .inner{
     height: 90vh;
@@ -19,15 +18,6 @@
     height: 79vh;
 }
 
-/* .left,
-.right{
-    height: 100%;
-} */
-
-#expenseTable{
-    
-}
-
 td {
     max-width: 15ch; /* Adjust the number of characters as needed */
     overflow: hidden;
@@ -42,7 +32,7 @@ td {
 
 canvas{
     width:100%;
-    max-width:500px;
+    max-width:550px;
 }
 
 #leaderBoardTable thead,
@@ -57,9 +47,9 @@ canvas{
         height: 100vh;
         width: 100vh;
     }
-    /* .outer{
+    .outer{
         height: 100vh;
-    } */
+    }
     #expenseTable{
         /* font-size: x-small; */
     }

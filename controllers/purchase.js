@@ -59,21 +59,17 @@ exports.updateMembershipOrder = async(req,res,next) => {
             paymentId = razorpay_payment_id;
         }   
 
-        let updateOrderPromise;
-        let updateUserPromise = Promise.resolve();
-
         const session = await mongoose.startSession();
         session.startTransaction();
         try{        
             //update order paymentStatus and paymentId
-            updateOrderPromise =  Order.findOneAndUpdate({order_id: razorpay_order_id, userId: user._id},
+            await Order.findOneAndUpdate({order_id: razorpay_order_id, userId: user._id},
                 {payment_id: paymentId, order_status: paymentStatus},
                 { session }
             ); 
             //update user isPremium
-            updateUserPromise = paymentStatus === "SUCCESS" ? User.findByIdAndUpdate({_id: user._id}, {is_premium: true}, {session}) : Promise.resolve();
+            await paymentStatus === "SUCCESS" ? User.findByIdAndUpdate({_id: user._id}, {is_premium: true}, {session}) : Promise.resolve();
 
-            await Promise.all([updateOrderPromise, updateUserPromise]); 
             await session.commitTransaction(); 
         }
         catch(err){
