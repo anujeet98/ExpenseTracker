@@ -1,9 +1,20 @@
-Project setup steps:
-1] Clone the repository. For latest changes, check branch: ProductionDeployment
-2] Intitial requirements: NodeJS, NPM, nodemon on local environment.
-3] Install all project dependencies: npm install
+# Project setup steps:
+
+1] Clone the repository. 
+For updated code, check branch: ProductionDeployment
+
+2] Intitial requirements: 
+```
+NodeJS, NPM, nodemon
+```
+3] Install all project dependencies: 
+```
+npm install
+```
 4] Add .env file. Replace '*******' with credentials. 
+
    Sample- 
+```
    //JWT secret
    AUTH_KEY = "************************"
 
@@ -28,11 +39,17 @@ Project setup steps:
    //MongoDB credentials for NoSQL implementation
    MONGODB_CONN_STR = "mongodb+srv://*******************@cluster0.ijrpm3b.mongodb.net/expenseTracker?retryWrites=true&w=majority"
 
-   //DB credentials for SQL Implementation
+   //DB credentials if intend to use SQL Implementation
    DB_NAME = "**************"
    DB_USERNAME = "root"
    DB_PASSWORD = "*************"
    DB_HOST = "*************"
-   APP_PORT = "3000"
-5] npm start app.js
 
+   APP_PORT = "3000"
+```
+5] Start the server
+```
+npm start app.js
+```
+
+Note: Ensure database is already setup in mongodb.
