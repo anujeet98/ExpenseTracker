@@ -175,7 +175,7 @@ function showExpenses(res){
 
         // create delete button
         let delBtn = document.createElement("button");
-        delBtn.className = "deleteExpense btn btn-sm btn-danger w-75 ";
+        delBtn.className = "deleteExpense btn btn-danger w-100";
         delBtn.setAttribute("onclick",`deleteExpense(event,'${obj._id}')`);
         delBtn.appendChild(document.createTextNode("Delete"));
 
@@ -185,7 +185,7 @@ function showExpenses(res){
 
         // create edit button
         let editBtn = document.createElement("button");
-        editBtn.className = "editExpense btn btn-sm btn-warning w-75 ";
+        editBtn.className = "editExpense btn btn-warning w-100";
         editBtn.setAttribute("onclick",`editExpense(event,'${obj._id}')`);
         editBtn.appendChild(document.createTextNode("Edit"));
         let tdEditBtn = document.createElement('td');

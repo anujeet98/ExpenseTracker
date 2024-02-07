@@ -16,32 +16,29 @@
     <link href="../public/css/mainNew.css" rel="stylesheet">
 </head>
 <body>
-    <div class="outer container-fluid bg-dark-subtle text-light min-vh-100 d-flex align-items-center justify-content-center">
-        <div class="inner container bg-light text-dark w-75">
-            <div class="header row">
-                <div class="col mt-auto mb-auto" id="header-top">
-                    <div class="header d-flex align-items-center float-start ">
-                        <div id="header-logo" class="text-dark fst-italic fs-2 ms-3"><h2>ExpendEase</h2></div>
-                        <div id="premiumTag" class="ms-1 text-danger mt-3"><h5>Premium</h5></div>
-                    </div>
+    <div class="outer container-fluid bg-dark-subtle text-light d-flex align-items-center justify-content-center">
+        <div class="inner container bg-light text-dark w-100">
+
+            <div class="header d-flex justify-content-between w-100 ">
+                <div class="d-flex align-items-center float-start mt-auto mb-auto">
+                    <div id="header-logo" class="text-dark fst-italic mt-auto mb-auto"><h4 class="fs-4">ExpendEase</h4></div>
+                    <div id="premiumTag" class="ms-1 text-danger mt-2"><h6 class="fs-6">Premium</h6></div>
                 </div>
-                <div class="col mt-auto mb-auto">
-                    <div class="d-flex align-items-center float-end ">
-                        <h4 id="profilename" class="mt-auto mb-auto"></h4>
-                        <div class="dropdown bg-light">
-                            <i class="fa fa-user-circle-o me-3 btn btn-secondary dropdown-toggle bg-light text-dark border-0" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:35px"></i>
-                            <ul class="dropdown-menu dropdown-menu-end bg-light-subtle ">
-                              <li><a class="dropdown-item" href="#" onclick="userLogout()">SignOut</a></li>
-                            </ul>
-                          </div>
-                    </div>
+                <div class="d-flex align-items-center float-end mt-auto mb-auto">
+                    <h6 id="profilename" class="h6 text-align-center mt-auto mb-auto"></h6>
+                    <div class="dropdown bg-light">
+                        <i class="fa fa-user-circle-o btn btn-secondary dropdown-toggle bg-light text-dark p-0 border-0 ms-2" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:28px"></i>
+                        <ul class="dropdown-menu dropdown-menu-end bg-light-subtle ">
+                          <li><a class="dropdown-item" href="#" onclick="userLogout()">SignOut</a></li>
+                        </ul>
+                      </div>
                 </div>
-            </div><hr class="m-0 ">
+            </div>
 
             <div class="navigation row">
-                <nav class="navbar navbar-expand-lg navbar-dark bg-dark pt-0 pb-0 container-fluid">
+                <nav class="navbar navbar-expand navbar-dark bg-dark pt-0 pb-0 container-fluid">
                     <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto ms-3" id="premiumFeatures">
+                        <ul class="navbar-nav me-auto ms-md-3" id="premiumFeatures">
                             <li class="nav-item">
                                 <a class="nav-link" href="#" onclick="switchview(loadExpensePage)">Add Expense</a>
                             </li>
@@ -49,87 +46,89 @@
                     </div>
                 </nav>
             </div>
+
             <div class="content row bg-info">
-                <div class="expense container row bg-light m-0">
-                    <div class="left col-md-6 border-end ">
-                        <form id="ExpenseForm" class="p-5">
-                            <!-- <div class="header-text mb-4">
-                                <h4>Welcome back, 🤗</h4>
-                                <small>Sign in to your account and continue your journey with us.</small>
-                            </div> -->
-                            <div class="input-group mb-3">
-                                <input type="number" name="amount" id="amt" min="1" class="form-control form-control-lg bg-light fs-6" placeholder="Expense Amount" required>
-                            </div>
-                            <div class="input-group mb-3">
-                                <input type="text" name="description" id="descr" class="form-control form-control-lg bg-light fs-6" placeholder="Expense Description" required>
-                            </div>   
-                            <div class="input-group mb-3">
-                                <select name="category" id="cat"  class="form-select form-select-lg bg-light fs-6" placeholder="Select Category" required>
-                                    <option class="catOption">Select Category</option>
-                                    <option class="catOption">Electricity</option>
-                                    <option class="catOption">Fuel</option>
-                                    <option class="catOption">Food</option>
-                                    <option class="catOption">Fitness</option>
-                                    <option class="catOption">Medical</option>
-                                    <option class="catOption">Movie</option>
-                                    <option class="catOption">Shopping</option>
-                                    <option class="catOption">Travel</option>
-                                    <option class="catOption">Others</option>
-                                </select>
-                            </div>   
-                            <div class="input-group mb-1 justify-content-center">
-                                <button id="submit" class="submitBtn btn btn-lg btn-primary w-100 fs-6">Add Expense</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="right col-md-6 fs-6 ">
-                        <div class="pt-5 ps-3 pe-3">
-                            <div class="row mb-3 d-flex justify-content-center ">
-                                <div class="col d-flex mb-1 ">
-                                    <label for="date-picker" class="col-form-label-sm me-1">Date: </label>
-                                    <input type="date" id="date-picker" class="form-control-sm">
+                <div class="expense container bg-light">
+                    <div class="row">
+                        <div class="left col-lg-6 border-end ps-3 pe-3 ps-lg-5 pe-lg-5">
+                            <form id="ExpenseForm" class="pt-4 pt-lg-5">
+                                <!-- <div class="header-text mb-4">
+                                    <h4>Welcome back, 🤗</h4>
+                                    <small>Sign in to your account and continue your journey with us.</small>
+                                </div> -->
+                                <div class="input-group mb-3">
+                                    <input type="number" name="amount" id="amt" min="1" class="form-control form-control-lg bg-light fs-6" placeholder="Expense Amount" required>
                                 </div>
-                                <div class="col dynamicPagingContainer">
-                                    <label for="dynamicPage" class="form-label ">Rows per page: </label>
-                                    <select name="dynamicPage" id="dynamicPage" class="form-control-sm">
-                                        <option class="pageOption">2</option>
-                                        <option class="pageOption">4</option>
-                                        <option class="pageOption">6</option>
-                                        <option class="pageOption">8</option>
-                                        <option class="pageOption">10</option>
+                                <div class="input-group mb-3">
+                                    <input type="text" name="description" id="descr" class="form-control form-control-lg bg-light fs-6" placeholder="Expense Description" required>
+                                </div>   
+                                <div class="input-group mb-3">
+                                    <select name="category" id="cat"  class="form-select form-select-lg bg-light fs-6" placeholder="Select Category" required>
+                                        <option class="catOption">Select Category</option>
+                                        <option class="catOption">Electricity</option>
+                                        <option class="catOption">Fuel</option>
+                                        <option class="catOption">Food</option>
+                                        <option class="catOption">Fitness</option>
+                                        <option class="catOption">Medical</option>
+                                        <option class="catOption">Movie</option>
+                                        <option class="catOption">Shopping</option>
+                                        <option class="catOption">Travel</option>
+                                        <option class="catOption">Others</option>
                                     </select>
+                                </div>   
+                                <div class="input-group mb-1 justify-content-center">
+                                    <button id="submit" class="submitBtn btn btn-lg btn-primary w-100 fs-6">Add Expense</button>
                                 </div>
-                            </div>
-                            <div class="expenseTable row form-group mb-1">
-                                <table id="expenseTable" class="table table-sm table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Amount</th>
-                                            <th>Category</th>
-                                            <th>Description</th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="expense-tbody">
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div id="pageContainer-expense" class="d-flex justify-content-center ">
+                            </form>
+                        </div>
+                        <div class="right col-lg-6 fs-6">
+                            <div class="pt-3 pt-lg-3 pt-xl-5 ps-3 pe-3">
+                                <div class="mb-3 d-block d-sm-flex justify-content-between ">
+                                    <div class="d-flex mb-1">
+                                        <label for="date-picker" class="form-label me-1 mt-auto mb-auto">Date: </label>
+                                        <input type="date" id="date-picker" class="form-control-sm w-100">
+                                    </div>
+                                    <div class="dynamicPagingContainer">
+                                        <label for="dynamicPage" class="form-label mt-auto mb-auto">Rows per page: </label>
+                                        <select name="dynamicPage" id="dynamicPage" class="form-control-sm">
+                                            <option class="pageOption">2</option>
+                                            <option class="pageOption">4</option>
+                                            <option class="pageOption">6</option>
+                                            <option class="pageOption">8</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="expenseTable row form-group table-responsive-sm m-0">
+                                    <table id="expenseTable" class="table table-sm table-hover fs-6 ">
+                                        <thead>
+                                            <tr>
+                                                <th>Amount</th>
+                                                <th>Category</th>
+                                                <th>Description</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="expense-tbody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="pageContainer-expense" class="d-flex justify-content-center mt-0 ">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="leaderboard container row bg-light m-0 inactive">
-                    <div class="left col-md-6 p-5">
-                        <div class="container d-flex justify-content-around  ">
+                    <div class="left col-lg-6 pt-4 pt-lg-5">
+                        <div class="container d-flex justify-content-evenly  ">
                             <button class="btn btn-dark " onclick="getLeaderboard(1,event); getUserStats(event);">All Time</button>
                             <button class="btn btn-dark " onclick="getLeaderboard(1,event); getUserStats(event);">Yearly</button>
                             <button class="btn btn-dark " onclick="getLeaderboard(1,event); getUserStats(event);">Monthly</button>
                         </div>
-                        <div class="leaderboardContainer row form-group mt-5 mb-1 ps-3 pe-3">
-                            <table id="leaderBoardTable" class="table table-sm  table-hover justify-content-center">
+                        <div class="leaderboardContainer row form-group mt-1 mb-1 ps-3 pe-3">
+                            <table id="leaderBoardTable" class="table table-sm  table-hover align-content-center ">
                                 <thead>
                                     <tr>
                                         <th>Rank</th>
@@ -144,10 +143,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="right col-md-6 ">
-                        <canvas id="myChart" class="bg-dark-subtle mt-5   "></canvas>
+                    <div class="right col-lg-6 d-flex flex-column ">
+                        <canvas id="myChart" class="bg-dark-subtle mt-5 ms-auto me-auto "></canvas>
                         <hr>
-                        <div class="container">
+                        <div class="container ">
                             <h3>Your Stats</h3>
                             <h4 id="user-expense-total"></h4>
                         </div>
@@ -155,7 +154,7 @@
                 </div>
 
                 <div class="report container row bg-light m-0 inactive">
-                    <div class="left col-md-6 border-end p-5 ">
+                    <div class="left col-lg-6 border-end pt-3 pt-lg-5 ps-3 pe-3">
                         <div class="container d-flex justify-content-around  ">
                             <div class="container">
                                 <div class="form-check form-check-inline mb-3">
@@ -177,7 +176,7 @@
                                   <button type="button" class="btn btn-primary ms-3 mt-2 mb-3" onclick="downloadReport()">Download</button>
 
                                   <!-- <object id="fgh" data="https://xpense-tracker-app.s3.amazonaws.com/expense_65bb7f1e34ad1778f5820300_Tue%20Feb%2006%202024%2004%3A45%3A57%20GMT%2B0530%20%28India%20Standard%20Time%29.csv"  width="100%" height="400"></object> -->
-                                  <iframe id="iframe" src="" width="100%" height="200px" frameborder="1"></iframe>  
+                                  <iframe id="iframe" src="" width="100%" height="100px" frameborder="1"></iframe>  
                                   <!-- <iframe id="iframe" src="" width="100%" height="400" style="border:1px solid black;"> -->
                                 <!-- </iframe> -->
                                 <!-- https://view.officeapps.live.com/op/embed.aspx?src= -->
@@ -186,20 +185,16 @@
                             
                         </div>
                     </div>
-                    <div class="right col-md-6 ">
-                        <canvas id="piechart" class="bg-light ps-5"></canvas>
-                        <div id="totalexpense" class="d-flex container justify-content-center mt-5 "></div>
+                    <div class="right col-lg-6 ">
+                        <canvas id="piechart" class="bg-light ms-auto me-auto"></canvas>
+                        <div id="totalexpense" class="d-flex container justify-content-center mt-4 "></div>
                         <hr>
-                        <canvas id="linechart" class="bg-light mt-3"></canvas>
+                        <canvas id="linechart" class="bg-light ms-auto me-auto"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-  
-    <script>
-
-    </script>
 
     <!-- JS for the backend logic -->
     <script src="../public/js/expense.js"></script>

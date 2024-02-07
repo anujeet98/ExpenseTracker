@@ -1,5 +1,8 @@
-
-
+ 
+.outer{
+    height: 100%;
+    background-color: red;
+}
 .inner{
     height: 90vh;
 }
@@ -39,11 +42,36 @@ td {
 
 canvas{
     width:100%;
-    max-width:700px;
-    height: 250px;
+    max-width:500px;
 }
 
 #leaderBoardTable thead,
 #leaderBoardTable tbody{
     text-align: center;
+}
+
+
+
+@media only screen and (max-width: 992px){
+    .inner{
+        height: 100vh;
+        width: 100vh;
+    }
+    /* .outer{
+        height: 100vh;
+    } */
+    #expenseTable{
+        /* font-size: x-small; */
+    }
+    /* .box-area{
+        margin: 0px 10px;
+        color: red;
+    }
+    .left-box{
+        height: 100px;
+        overflow: hidden;
+    }
+    .right-box{
+        padding: 20px;
+    } */
 }
