@@ -25,7 +25,7 @@ async function getLogin(event){
             password: password.value
         };
 
-        const response = await axios.post('http://localhost:9000/user/login', getLogin);
+        const response = await axios.post('http://54.234.60.93:3000/user/login', getLogin);
         if(response.status===201){
             localStorage.setItem("token",response.data.token);
             alert(response.data.message);
