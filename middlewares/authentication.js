@@ -11,7 +11,7 @@ module.exports.auth = async(req,res,next) => {
             next();
         }
         else{
-            return res.status(404).json({ error: 'User not found. \nPlease sign in again' });
+            return res.status(401).json({ error: 'User not found. \nPlease sign in again' });
         }
     }
     catch(err){

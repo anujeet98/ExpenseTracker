@@ -44,7 +44,7 @@ app.use((req,res) => {
     console.log(__dirname, req.url);
     const fileExists = fs.existsSync(path.join(__dirname, `/views/${req.url}`));
     if(req.url === '/'){
-        req.url = 'login.html';
+        req.url = 'home.html';
         return res.sendFile(path.join(__dirname, `/views/${req.url}`));
     }
     else if(fileExists)
@@ -63,6 +63,7 @@ const serverInit = async function (){
         const con = await mongoose.connect(`${process.env.MONGODB_CONN_STR}`);
         app.listen(process.env.APP_PORT || 3000);
         console.log(`Server is running on PORT: ${process.env.APP_PORT}`);
+        // mongoose.set('debug', true);
     }
     catch(err){
         console.error(err);

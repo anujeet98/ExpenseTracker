@@ -11,7 +11,8 @@ exports.uploadToS3 = (filename, data) => {
                 Key: filename,
                 Body: data,
                 Bucket: process.env.AWS_S3_BUCKET,
-                ACL: 'public-read'
+                ACL: 'public-read',
+                ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             }, (err, result)=>{
                 if(err){
                     console.log('something went wrong', err);

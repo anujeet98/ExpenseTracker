@@ -1,0 +1,77 @@
+ 
+.outer{
+    height: 100%;
+    background-color: red;
+}
+.inner{
+    height: 90vh;
+}
+
+.header{
+    height: 6vh;
+}
+
+.navigation{
+    height: 5vh;
+}
+
+.content{
+    height: 79vh;
+}
+
+/* .left,
+.right{
+    height: 100%;
+} */
+
+#expenseTable{
+    
+}
+
+td {
+    max-width: 15ch; /* Adjust the number of characters as needed */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; /* Adds ellipsis (...) for hidden text */
+}
+
+.inactive
+{
+    display: none;
+}
+
+canvas{
+    width:100%;
+    max-width:500px;
+}
+
+#leaderBoardTable thead,
+#leaderBoardTable tbody{
+    text-align: center;
+}
+
+
+
+@media only screen and (max-width: 992px){
+    .inner{
+        height: 100vh;
+        width: 100vh;
+    }
+    /* .outer{
+        height: 100vh;
+    } */
+    #expenseTable{
+        /* font-size: x-small; */
+    }
+    /* .box-area{
+        margin: 0px 10px;
+        color: red;
+    }
+    .left-box{
+        height: 100px;
+        overflow: hidden;
+    }
+    .right-box{
+        padding: 20px;
+    } */
+}

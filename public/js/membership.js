@@ -1,7 +1,6 @@
 const premiumTag = document.getElementById("premiumTag");
 const headerTop = document.getElementById("header-top");
 
-document.addEventListener('DOMContentLoaded', membershipStatus);
 
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
@@ -17,18 +16,19 @@ function membershipStatus() {
     const decoded = parseJwt(localStorage.getItem("token"));
     if(decoded.isPremium === true){
         premiumTag.style.visibility = 'visible';
-        viewPremiumFeatures();
+        laodPremiumFeatures();
     }
     else{
         premiumTag.style.visibility = 'hidden';
 
         const buyBtn = document.createElement('button');
-        buyBtn.appendChild(document.createTextNode('Become Premium User'));
+        buyBtn.classList.add(['btn', 'btn-primary'])
+        buyBtn.appendChild(document.createTextNode('Become Premium member'));
         buyBtn.setAttribute("id", "premiumBtn");
         buyBtn.onclick = ()=>{
             buyPremium();
         };
-        headerTop.appendChild(buyBtn);
+        document.getElementById('premiumFeatures').appendChild(buyBtn);
     }
 };
 
@@ -37,7 +37,7 @@ function membershipStatus() {
 async function buyPremium(e){
     try{
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/purchase/premium-membership`, {headers: {"Authorization":token}});
+        const response = await api.get(`/purchase/premium-membership`, {headers: {"Authorization":token}});
 
         if(response.status === 201){
 
@@ -46,11 +46,11 @@ async function buyPremium(e){
                 "order_id": response.data.order.id,
                 "handler": async function(response) {
                     try{
-                        const updateResponse = await axios.put(`http://${BACKEND_ADDRESS}/purchase/update-membership`,response ,{headers: {"Authorization":token}} );
+                        const updateResponse = await api.put(`/purchase/update-membership`,response ,{headers: {"Authorization":token}} );
                         if(updateResponse.status === 200){
                             //add ispremium token in LS
                             localStorage.setItem("token",updateResponse.data.token);
-                            headerTop.removeChild(document.getElementById('premiumBtn'));
+                            document.getElementById('premiumFeatures').removeChild(document.getElementById('premiumBtn'));
                             membershipStatus();
                             return alert('payment successful for premium membership');
                         }
@@ -68,7 +68,7 @@ async function buyPremium(e){
 
             rzpPayment.on('payment.failed', async ()=>{
                 try{
-                    await axios.put(`http://${BACKEND_ADDRESS}/purchase/update-membership`,{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
+                    await api.put(`/purchase/update-membership`,{razorpay_order_id: response.data.order.id} ,{headers: {"Authorization":token}} );
                 }
                 catch(err){
                     if(err.response) 

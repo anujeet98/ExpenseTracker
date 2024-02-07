@@ -1,31 +1,58 @@
 const form = document.getElementById("ExpenseForm");
-const pageContainer = document.getElementById("pageContainer");
+const pageContainerExpense = document.getElementById("pageContainer-expense");
 const dynamicPage = document.getElementById("dynamicPage");
-const expenseTable = document.getElementById("expenseTable");
+const expenseTable = document.getElementById("expense-tbody");
 
 // Expense details
 const amount = document.getElementById("amt");
 const description = document.getElementById("descr");
 const category = document.getElementById("cat");
 
-const BACKEND_ADDRESS = 'localhost:3000';
+let editing=false;
+let editId;
 
-// EventListers
+const BACKEND_ADDRESS = 'localhost:3000';
+const api = axios.create({
+    baseURL: `http://${BACKEND_ADDRESS}`,
+});
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response.status === 401) {
+            alert('Token expired or unauthorized. Redirecting to login.');
+            localStorage.removeItem('token');
+            window.location.href = '/home.html';
+        }
+        return Promise.reject(error);
+    }
+);
+//-----------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', ()=>{
+    updateProfileName();
+    membershipStatus();
+    loadExpensePage();
+});
+
 form.addEventListener('submit',addExpense);
 dynamicPage.addEventListener('change', ()=>{
     localStorage.setItem("ROWS_PER_PAGE", dynamicPage.value);
     getExpenses(1, localStorage.getItem("ROWS_PER_PAGE"));
-})
-document.addEventListener('DOMContentLoaded', ()=>{
+});
+document.getElementById('date-picker').addEventListener('change', ()=>{
+    getExpenses(1,localStorage.getItem("ROWS_PER_PAGE") || 2);
+});
+//-------------------------------------------------------------------------------------------
+function userLogout(){
+    localStorage.removeItem('token');
+    window.location.href = '/home.html';
+}
+function loadExpensePage(){
+    document.querySelector('.expense').classList.remove('inactive');
     const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
     dynamicPage.value = rowsPerPage;
     getExpenses(1, rowsPerPage);
-});
-
-let editing=false;
-let editId;
-
-//-------------------------------------------------------------------------------------------
+};
 
 async function addExpense(e) {
     e.preventDefault();
@@ -42,25 +69,23 @@ async function addExpense(e) {
             };
             if(editing===true){
                 //Edit Product
-                const response = await axios.put(`http://${BACKEND_ADDRESS}/expense/`+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await api.put(`/expense/`+editId, expenseObj, {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status === 201){
                     amount.value = '';
                     description.value = '';
                     category.value = '';
                     editing=false;
                     getExpenses(1, rowsPerPage);
-                    // updateNewExpense_Li(response.data.updatedExpenseDetail);
                 }
             }
             else{
                 //Add New Product
-                const response = await axios.post(`http://${BACKEND_ADDRESS}/expense/`, expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
+                const response = await api.post(`/expense/`, expenseObj,  {headers: {"Authorization": localStorage.getItem("token")}});
                 if(response.status===201){
                     amount.value = '';
                     description.value = '';
                     category.value = '';
                     getExpenses(1, rowsPerPage);
-                    // updateNewExpense_Li(response.data.newExpenseDetail);
                 }
             }
         }
@@ -75,11 +100,12 @@ async function getExpenses(pageNo, rowsPerPage){
     let page = pageNo;
     try{
         editing=false;
+        const selectedDate = document.getElementById('date-picker').value;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/?page=${page}&rowsperpage=${rowsPerPage}`, {headers: {"Authorization":token}});
+        const response = await api.get(`/expense/?page=${page}&rowsperpage=${rowsPerPage}&date=${selectedDate}`, {headers: {"Authorization":token}});
         if(response.status === 200){
             showExpenses(response.data.expenses);
-            showPagination(response.data);
+            showPagination(response.data, pageContainerExpense);
         }
     }
     catch(err){
@@ -92,7 +118,7 @@ async function deleteExpense(e,id){
     try{
         // let itemSelect = e.target.parentElement;
         const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
-        const response = await axios.delete(`http://${BACKEND_ADDRESS}/expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
+        const response = await api.delete(`/expense/`+id, {headers: {"Authorization": localStorage.getItem("token")}});
         if(response.status === 204){
             getExpenses(1, rowsPerPage);
             return alert('Expense deleted..!!');
@@ -108,9 +134,9 @@ async function editExpense(e,id){
     try{
         let itemSelect = e.target.parentElement.parentElement;
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://${BACKEND_ADDRESS}/expense/`+id, {headers: {"Authorization":token}});
+        const response = await api.get(`/expense/`+id, {headers: {"Authorization":token}});
         if(response.status===200){
-            let obj = response.data[0];
+            let obj = response.data;
             amount.value = obj.amount;
             description.value = obj.description;
             category.value = obj.category;
@@ -149,9 +175,9 @@ function showExpenses(res){
 
         // create delete button
         let delBtn = document.createElement("button");
-        delBtn.className = "deleteExpense";
+        delBtn.className = "deleteExpense btn btn-danger w-100";
         delBtn.setAttribute("onclick",`deleteExpense(event,'${obj._id}')`);
-        delBtn.appendChild(document.createTextNode("Delete Expense"));
+        delBtn.appendChild(document.createTextNode("Delete"));
 
         let tdDeleteBtn = document.createElement('td');
         tdDeleteBtn.appendChild(delBtn);
@@ -159,9 +185,9 @@ function showExpenses(res){
 
         // create edit button
         let editBtn = document.createElement("button");
-        editBtn.className = "editExpense";
+        editBtn.className = "editExpense btn btn-warning w-100";
         editBtn.setAttribute("onclick",`editExpense(event,'${obj._id}')`);
-        editBtn.appendChild(document.createTextNode("Edit Expense"));
+        editBtn.appendChild(document.createTextNode("Edit"));
         let tdEditBtn = document.createElement('td');
         tdEditBtn.appendChild(editBtn);
         tr.appendChild(tdEditBtn);
@@ -174,24 +200,48 @@ function showExpenses(res){
 }
 
 
-function showPagination(res){
+function showPagination(res,container){
+    const pageContainer = container
     pageContainer.innerHTML = "";
     if(res.hasPreviousPage)
-        createPageButton(res.previousPage, false);
-    createPageButton(res.currentPage, true);
+        createPageButton(res.previousPage, container, false);
+    createPageButton(res.currentPage, container, true);
     if(res.hasNextPage)
-        createPageButton(res.nextPage, false);
+        createPageButton(res.nextPage, container, false);
 }
 
-function createPageButton(pageNo, isCurrentPage){
+function createPageButton(pageNo, container, isCurrentPage){
     const rowsPerPage = localStorage.getItem("ROWS_PER_PAGE") || 2; 
 
     const pageButton = document.createElement('button');
     pageButton.onclick = () => {
-        getExpenses(pageNo,rowsPerPage); 
+        if(container.id === 'pageContainer-expense')
+            getExpenses(pageNo,rowsPerPage); 
+        else
+            getLeaderboard(pageNo);
     }
-    pageButton.className = "pageBtn";
+    pageButton.className = "pageBtn btn-sm fs-6 m-1 ";
+    if(isCurrentPage)
+        pageButton.classList.add('bg-dark-subtle');
     pageButton.appendChild(document.createTextNode(pageNo));
 
-    pageContainer.appendChild(pageButton);
+    container.appendChild(pageButton);
+}
+
+async function updateProfileName(){
+    try{
+        const response = await api.get(`/user/`, {headers: {"Authorization": localStorage.getItem("token")}});
+        document.getElementById('profilename').innerText = response.data.username;
+    }
+    catch(err){
+        if(err.response) 
+            alert(err.response.data.error);
+    }
+}
+
+function switchview(cb){
+    //content child all display none
+    const x = document.querySelectorAll('.content>div');
+    x.forEach(item => item.classList.add('inactive'));
+    cb();
 }
