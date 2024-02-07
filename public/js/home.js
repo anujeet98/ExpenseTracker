@@ -10,7 +10,7 @@ const signupBtn =  document.getElementById("signup");
 const signinBtn = document.getElementById("signin");
 const resetPsswdBtn = document.getElementById('resetpsswd');
 const formWindow = document.getElementById('form');
-const BACKEND_ADDRESS = 'http://34.229.158.3:80';
+const BACKEND_ADDRESS = 'http://54.226.178.93:80';
 
 if(signupBtn)
     signupBtn.addEventListener("click", signup);
