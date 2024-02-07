@@ -5,7 +5,7 @@ console.log(forgetPasswordForm)
 forgetPasswordForm.addEventListener('submit',forgetPassword);
     
 // document.addEventListener('DOMContentLoaded', (e)=>{});
-const BACKEND_ADDRESS = 'localhost:3000';
+const BACKEND_ADDRESS = '34.229.158.3:3000';
 
 async function forgetPassword(e){
     try{
