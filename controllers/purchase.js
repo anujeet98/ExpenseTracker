@@ -68,7 +68,8 @@ exports.updateMembershipOrder = async(req,res,next) => {
                 { session }
             ); 
             //update user isPremium
-            await paymentStatus === "SUCCESS" ? User.findByIdAndUpdate({_id: user._id}, {is_premium: true}, {session}) : Promise.resolve();
+            if(paymentStatus === "SUCCESS")
+                await User.findByIdAndUpdate(user._id, {is_premium: true}, {session});
 
             await session.commitTransaction(); 
         }
