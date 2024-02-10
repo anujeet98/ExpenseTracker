@@ -11,7 +11,7 @@ const category = document.getElementById("cat");
 let editing=false;
 let editId;
 
-const BACKEND_ADDRESS = '54.226.178.93:80';
+const BACKEND_ADDRESS = '54.198.2.94:80';
 const api = axios.create({
     baseURL: `http://${BACKEND_ADDRESS}`,
 });
