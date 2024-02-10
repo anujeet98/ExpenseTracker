@@ -22,7 +22,9 @@ function membershipStatus() {
         premiumTag.style.visibility = 'hidden';
 
         const buyBtn = document.createElement('button');
-        buyBtn.classList.add(['btn', 'btn-primary'])
+        buyBtn.classList.add('btn');
+        buyBtn.classList.add('btn-warning');
+        buyBtn.classList.add('rounded-pill');
         buyBtn.appendChild(document.createTextNode('Become Premium member'));
         buyBtn.setAttribute("id", "premiumBtn");
         buyBtn.onclick = ()=>{

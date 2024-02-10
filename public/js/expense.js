@@ -11,9 +11,9 @@ const category = document.getElementById("cat");
 let editing=false;
 let editId;
 
-const BACKEND_ADDRESS = '54.198.2.94:80';
+const BACKEND_ADDRESS = 'http://www.expendease.work.gd';
 const api = axios.create({
-    baseURL: `http://${BACKEND_ADDRESS}`,
+    baseURL: `${BACKEND_ADDRESS}`,
 });
 
 api.interceptors.response.use(

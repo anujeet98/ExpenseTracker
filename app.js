@@ -28,7 +28,9 @@ app.use(morgan('combined', {stream: accessLogStream}));
 
 //---------------------------------------------------------------
 
-app.use(cors());
+app.use(cors({
+    origin: JSON.parse(`${process.env.ACCEPTED_ORIGINS}`)
+}));
 app.use(express.json({extended: false}));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 

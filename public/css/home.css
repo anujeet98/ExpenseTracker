@@ -33,3 +33,8 @@ body{
 .inactive{
     display: none;
 }
+
+.applogo{
+    background-color: rgba(127, 126, 126, 0.238);
+    
+}
